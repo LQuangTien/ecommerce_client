@@ -1,0 +1,13 @@
+.input {
+  display: block;
+  padding: 12px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+
+  font-size: 1.6rem;
+  color: var(--black);
+  line-height: 1.4;
+  background-color: white;
+
+  outline: none;
+}

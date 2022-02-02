@@ -1,0 +1,9 @@
+.anchor {
+  font-size: 1.4rem;
+  color: var(--gray);
+}
+.anchor:hover {
+  cursor: pointer;
+  color: var(--primary);
+  transition: color ease 0.2s;
+}

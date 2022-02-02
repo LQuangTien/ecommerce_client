@@ -1,0 +1,27 @@
+.footer {
+  background-color: #f5f5f5;
+}
+.footer__heading {
+  margin-top: 2rem;
+  margin-bottom: 2.8rem;
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+.footer__list {
+  list-style-type: none;
+}
+.footer__link,
+.footer__content {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 0;
+  font-size: 1.6rem;
+  color: var(--black);
+  text-decoration: none;
+}
+.footer__link:hover {
+  color: var(--primary);
+}
+.footer__icon {
+  color: var(--primary);
+}

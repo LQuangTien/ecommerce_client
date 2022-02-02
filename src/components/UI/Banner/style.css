@@ -1,0 +1,25 @@
+/* Banner */
+.banner {
+  margin: 3.2rem 0;
+  height: 20rem;
+  position: relative;
+}
+.banner__image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.banner__slug {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.2rem;
+  text-transform: uppercase;
+  color: var(--black);
+}
+/* Banner end */
