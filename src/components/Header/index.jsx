@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoCartOutline, IoMenu, IoSearchSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
+import { GoogleLogin } from "react-google-login";
 import {
   changePassword,
   forgotPassword,
@@ -86,6 +87,9 @@ const Header = (props) => {
       history.push(`/search?q=${search}&page=1`);
     }
   };
+  const responseGoogle = (response) => {
+    console.log(response);
+  };
   const renderSigninModal = () => {
     return (
       <Modal
@@ -157,6 +161,14 @@ const Header = (props) => {
           <div className="col sm-12 md-12 lg-12 mt-16 socials flex-center">
             <p className="socials__label">Hope you have fun with us</p>
             <div className="mt-12">
+              <GoogleLogin
+                clientId="255711495560-a3n44htsjq498m1oou5lmnkbkrv015c7.apps.googleusercontent.com"
+                buttonText="Login"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={"single_host_origin"}
+              />
+              ,
               <div className="logo">
                 <img src={kinzy} alt="" />
               </div>
