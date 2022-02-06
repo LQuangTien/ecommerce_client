@@ -185,3 +185,60 @@ svg.search-bar__button-icon {
   color: var(--primary);
   transition: 0.2s ease;
 }
+
+.position-relative {
+  position: relative;
+}
+
+.header__menu {
+  position: absolute;
+  width: 100%;
+  background-color: white;
+  z-index: 999;
+  box-shadow: 0 2px 2px 2px #eee;
+  padding: 0.8rem;
+  transition: all 0.2s;
+  top: 100%;
+}
+.header__menu::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  top: -10px;
+  left: 0;
+  height: 10px;
+}
+.header__menu--show {
+  opacity: 1;
+  width: 100%;
+
+  transition: all 0.2s;
+}
+
+.header__menu--hide {
+  opacity: 0;
+  height: 0;
+  padding: 0;
+  width: 100%;
+  transition: all 0.2s;
+}
+.header__menu.header__menu--hide .header__menu-list {
+  display: none;
+}
+
+.header__menu .header__menu-list {
+  display: grid;
+  grid-template-columns: 200px;
+  border-bottom: none;
+}
+.header__menu .header__menu-list .main-menu-item {
+  padding: 0.4rem 0;
+}
+
+@media (min-width: 30em) {
+  .header__menu-list {
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-auto-columns: 200px;
+    grid-auto-flow: column;
+  }
+}

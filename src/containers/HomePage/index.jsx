@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { IoStar } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link } from "react-router-dom";
-import { getAll, getBySlug } from "../../actions";
+import { getAll } from "../../actions";
 import { generatePictureUrl } from "../../urlConfig";
 import formatThousand from "../../utils/formatThousand";
 import { isNew } from "../../utils/isNew";
@@ -13,7 +12,6 @@ import "./style.css";
 function HomePage() {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.products);
-  const { categories } = useSelector((state) => state.categories);
   const [tabProducts, setTabProducts] = useState([]);
   useEffect(() => {
     dispatch(getAll());

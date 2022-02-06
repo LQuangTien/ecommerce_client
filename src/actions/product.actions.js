@@ -90,11 +90,20 @@ export const getBySearch = (params, size = initParams.pageSize) => {
         sortOrder: ORDER_OPTIONS[0].sortOrder,
         sortBy: ORDER_OPTIONS[0].sortBy,
       };
+  const { orderBy, page, from, to, ...orderParams } = params;
+  let price = "..";
+  if (from && to) {
+    price = `${from}..${to}`;
+  } else if (from && !to) {
+    price = `${from}..`;
+  } else if (!from && to) {
+    price = `..${to}`;
+  }
   return async (dispatch) => {
     try {
       dispatch({ type: productConstants.GET_PRODUCT_BY_QUERY_REQUEST });
       const res = await axios.get(`products/search/${params.page}/${8}`, {
-        params: { q: params.q, ...sort },
+        params: { ...orderParams, salePrice: price, ...sort },
       });
       const result = {
         ...res.data.data,

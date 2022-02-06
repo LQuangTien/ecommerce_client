@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  IoCartOutline,
-  IoLogoFacebook,
-  IoLogoGoogle,
-  IoLogoInstagram,
-  IoSearchSharp,
-} from "react-icons/io5";
+import { IoCartOutline, IoMenu, IoSearchSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
+  changePassword,
+  forgotPassword,
   getAllCategory,
   getCart,
   login,
   signout,
   signup,
-  forgotPassword,
-  changePassword,
 } from "../../actions";
 import kinzy from "../../images/logo/kinzy.jpg";
 import Anchor from "../UI/Anchor";
@@ -35,6 +29,7 @@ const Header = (props) => {
   const [lastName, setLastName] = useState("");
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -451,9 +446,15 @@ const Header = (props) => {
     });
     return sum;
   };
-  const renderCategories = () => {
-    return categoryState.categories.map((category) => (
-      <li key={category._id} className="main-menu-item">
+  const renderCategories = (categories) => {
+    return categories.map((category) => (
+      <li
+        key={category._id}
+        className="main-menu-item"
+        onClick={() => {
+          setShowMenu((prev) => false);
+        }}
+      >
         <Link className="main-menu-link" to={"/products/" + category.name}>
           <span>{category.name}</span>
         </Link>
@@ -509,9 +510,36 @@ const Header = (props) => {
         <div className="header__bottom">
           <div className="grid wide menuHeader">
             <div className="row menuHeader">
-              <div className="col lg-12 ">
-                <ul style={{ justifyContent: "center" }}>
-                  {categoryState.categories.length > 0 && renderCategories()}
+              <div className="col lg-12 position-relative">
+                <ul>
+                  <li
+                    className="main-menu-item"
+                    style={{
+                      fontSize: "2.8rem",
+                      marginRight: "2rem",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={() => {
+                      setShowMenu((prev) => true);
+                    }}
+                    onMouseLeave={() => {
+                      setShowMenu((prev) => false);
+                    }}
+                  >
+                    <IoMenu />
+                    <div
+                      className={`header__menu ${
+                        showMenu ? "header__menu--show" : "header__menu--hide"
+                      }`}
+                    >
+                      <ul className="header__menu-list">
+                        {categoryState.categories.length > 0 &&
+                          renderCategories(categoryState.categories)}
+                      </ul>
+                    </div>
+                  </li>
+                  {categoryState.categories.length > 0 &&
+                    renderCategories(categoryState.categories.slice(0, 10))}
                 </ul>
               </div>
             </div>

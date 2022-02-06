@@ -1,16 +1,15 @@
 import queryString from "query-string";
 import React, { useEffect, useState } from "react";
-import { IoStar } from "react-icons/io5";
 import ReactPaginate from "react-paginate";
 import { useRanger } from "react-ranger";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useLocation, useParams } from "react-router-dom";
+import { getByQuery } from "../../actions";
 import Banner from "../../components/UI/Banner";
 import { generatePictureUrl } from "../../urlConfig";
 import formatThousand from "../../utils/formatThousand";
-import "./style.css";
-import { getByQuery } from "../../actions";
 import { isNew } from "../../utils/isNew";
+import "./style.css";
 const INIT_PRICE_STATE = [0, 0];
 const ORDER_OPTIONS = [
   {

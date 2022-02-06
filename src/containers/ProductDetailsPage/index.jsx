@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { IoChatbubblesOutline, IoStar } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import { Link } from "react-router-dom";
-import { getAll, getByQuery, getProductById } from "../../actions";
+import { getAll, getProductById } from "../../actions";
 import { addToCart } from "../../actions/cart.actions";
 import Banner from "../../components/UI/Banner";
 import Button from "../../components/UI/Button";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { addOrder, getAddress } from "../../actions";
 import Anchor from "../../components/UI/Anchor";
 import Button from "../../components/UI/Button";
@@ -46,7 +46,6 @@ function CheckoutPage() {
   const [cartItems, setCartItems] = useState(cart.cartItems);
   const [payment, setPayment] = useState("cod");
   const dispatch = useDispatch();
-  const history = useHistory();
 
   useEffect(() => {
     if (auth.authenticate) {
