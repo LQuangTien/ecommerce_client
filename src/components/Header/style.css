@@ -194,7 +194,7 @@ svg.search-bar__button-icon {
   position: absolute;
   width: 100%;
   background-color: white;
-  z-index: 999;
+  z-index: 99;
   box-shadow: 0 2px 2px 2px #eee;
   padding: 0.8rem;
   transition: all 0.2s;
@@ -241,4 +241,9 @@ svg.search-bar__button-icon {
     grid-auto-columns: 200px;
     grid-auto-flow: column;
   }
+}
+
+.google-button {
+  width: 50%;
+  justify-content: center;
 }

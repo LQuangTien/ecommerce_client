@@ -62,6 +62,28 @@ const authReducer = (state = initState, action) => {
         signuping: false,
       };
       break;
+    case authConstants.GOOGLE_SIGN_IN_REQUEST:
+      state = {
+        ...state,
+        authenticating: true,
+      };
+      break;
+    case authConstants.GOOGLE_SIGN_IN_SUCCESS:
+      state = {
+        ...state,
+        user: action.payload.user,
+        token: action.payload.token,
+        authenticate: true,
+        authenticating: false,
+      };
+      break;
+    case authConstants.GOOGLE_SIGN_IN_FAILURE:
+      state = {
+        ...state,
+        error: action.payload.error,
+        authenticating: false,
+      };
+      break;
     case authConstants.LOGOUT_REQUEST:
       state = {
         ...state,

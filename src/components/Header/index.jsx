@@ -18,6 +18,8 @@ import Button from "../UI/Button";
 import Input from "../UI/Input";
 import Modal from "../UI/Modal";
 import "./style.css";
+import { googleApi } from "../../urlConfig";
+import FacebookLogin from "react-facebook-login";
 const Header = (props) => {
   const [signinModal, setSigninModal] = useState(false);
   const [signupModal, setSignupModal] = useState(false);
@@ -90,6 +92,9 @@ const Header = (props) => {
   const responseGoogle = (response) => {
     console.log(response);
   };
+  const responseFacebook = (response) => {
+    console.log(response);
+  };
   const renderSigninModal = () => {
     return (
       <Modal
@@ -159,16 +164,23 @@ const Header = (props) => {
             />
           </div>
           <div className="col sm-12 md-12 lg-12 mt-16 socials flex-center">
-            <p className="socials__label">Hope you have fun with us</p>
+            <GoogleLogin
+              clientId={googleApi}
+              buttonText="Login with Google"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              cookiePolicy={"single_host_origin"}
+              className="google-button mt-16"
+            />
+            <FacebookLogin
+              // appId="1272565219898979"
+              appId="5169654406399994"
+              autoLoad={true}
+              fields="name,email,picture"
+              callback={responseFacebook}
+            />
+            <p className="socials__label mt-16">Hope you have fun with us</p>
             <div className="mt-12">
-              <GoogleLogin
-                clientId="255711495560-a3n44htsjq498m1oou5lmnkbkrv015c7.apps.googleusercontent.com"
-                buttonText="Login"
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
-                cookiePolicy={"single_host_origin"}
-              />
-              ,
               <div className="logo">
                 <img src={kinzy} alt="" />
               </div>
@@ -567,3 +579,59 @@ const Header = (props) => {
 };
 
 export default Header;
+/**'
+ * {
+    "Ba": "118368065952391642816",
+    "wc": {
+        "token_type": "Bearer",
+        "access_token": "ya29.A0ARrdaM-7ve5jNCpSONWmXDrkpgunn99XiHLyPhgnsQjstRsEj1Y_XV6TUxThgw_h0lxhO3yyBLG5tgb8TiFp5eZHdiRJn7fJFF2HFrhLS6m1KlR-ogfUdD3M3NQU670D5X35rvpk1QX8RDQr8B_iayIt_Rf-",
+        "scope": "email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+        "login_hint": "AJDLj6JUa8yxXrhHdWRHIV0S13cArko_tYPTwxqWXJ9a2aHaR_b05cDfEj3s0wcShq9vltrrehSR24aFvr_NJFhKfPSJyF2xPg",
+        "expires_in": 3599,
+        "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE4MmU0NTBhMzVhMjA4MWZhYTFkOWFlMWQyZDc1YTBmMjNkOTFkZjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMjU1NzExNDk1NTYwLXA5bGdpcWVlMzhhdGY5dmQza3J2MG43NHFwYTJoMmIxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMjU1NzExNDk1NTYwLXA5bGdpcWVlMzhhdGY5dmQza3J2MG43NHFwYTJoMmIxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE4MzY4MDY1OTUyMzkxNjQyODE2IiwiZW1haWwiOiJxdWFuZ3RpZW5jbG9uZUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6Ik9kTHdFVFNfcGRta1FMYmdESExBSWciLCJuYW1lIjoiTMawdSBUaeG6v24iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFUWEFKeERYNEZmY1o4TEtvLXh4TURTRllUQm5weW9acmoydUlLYzd3U3g9czk2LWMiLCJnaXZlbl9uYW1lIjoiTMawdSIsImZhbWlseV9uYW1lIjoiVGnhur9uIiwibG9jYWxlIjoidmkiLCJpYXQiOjE2NDQxNDQwMjEsImV4cCI6MTY0NDE0NzYyMSwianRpIjoiMjc4NWI3ZTIxMmQzOWZlYmM4MDQ1ZDdjZjhiOGJhZGFiNjQwODI5ZSJ9.Z28DZ0xSXWblhe7woypg8WyJnZe0JexQ-X7uMEWMP5MAjk8kBo9qAeSuS3NlFhoWsOZYn5PraDpxxjOdQ2dVFyvKO93ETbeth9nD5bRlyQ4fVj_RLvxIYMCt3grznWg5by1mYOTCAOomTbKh1rqepC5yaDwMxpIYA1bOBldAg2Tg8KShfQD-lInT1yc_3-hw5D57BXOSpMHdY9XbD3xTmiccbvjl-OWCU9f6pIkalNxtAHFrGdYjDkhEZjky1V_n1GpqADHJhrpGilgAtaiNnbe9ztWTAZAJMCaj8UDjrzSIoD5Lg1eqnTYVwkNoqoryKs75sM82tbsN5BQoSmZw1g",
+        "session_state": {
+            "extraQueryParams": {
+                "authuser": "6"
+            }
+        },
+        "first_issued_at": 1644144020396,
+        "expires_at": 1644147619396,
+        "idpId": "google"
+    },
+    "Du": {
+        "FW": "118368065952391642816",
+        "tf": "Lưu Tiến",
+        "VX": "Lưu",
+        "iW": "Tiến",
+        "eN": "https://lh3.googleusercontent.com/a/AATXAJxDX4FfcZ8LKo-xxMDSFYTBnpyoZrj2uIKc7wSx=s96-c",
+        "tv": "quangtienclone@gmail.com"
+    },
+    "googleId": "118368065952391642816",
+    "tokenObj": {
+        "token_type": "Bearer",
+        "access_token": "ya29.A0ARrdaM-7ve5jNCpSONWmXDrkpgunn99XiHLyPhgnsQjstRsEj1Y_XV6TUxThgw_h0lxhO3yyBLG5tgb8TiFp5eZHdiRJn7fJFF2HFrhLS6m1KlR-ogfUdD3M3NQU670D5X35rvpk1QX8RDQr8B_iayIt_Rf-",
+        "scope": "email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+        "login_hint": "AJDLj6JUa8yxXrhHdWRHIV0S13cArko_tYPTwxqWXJ9a2aHaR_b05cDfEj3s0wcShq9vltrrehSR24aFvr_NJFhKfPSJyF2xPg",
+        "expires_in": 3599,
+        "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE4MmU0NTBhMzVhMjA4MWZhYTFkOWFlMWQyZDc1YTBmMjNkOTFkZjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMjU1NzExNDk1NTYwLXA5bGdpcWVlMzhhdGY5dmQza3J2MG43NHFwYTJoMmIxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMjU1NzExNDk1NTYwLXA5bGdpcWVlMzhhdGY5dmQza3J2MG43NHFwYTJoMmIxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE4MzY4MDY1OTUyMzkxNjQyODE2IiwiZW1haWwiOiJxdWFuZ3RpZW5jbG9uZUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6Ik9kTHdFVFNfcGRta1FMYmdESExBSWciLCJuYW1lIjoiTMawdSBUaeG6v24iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFUWEFKeERYNEZmY1o4TEtvLXh4TURTRllUQm5weW9acmoydUlLYzd3U3g9czk2LWMiLCJnaXZlbl9uYW1lIjoiTMawdSIsImZhbWlseV9uYW1lIjoiVGnhur9uIiwibG9jYWxlIjoidmkiLCJpYXQiOjE2NDQxNDQwMjEsImV4cCI6MTY0NDE0NzYyMSwianRpIjoiMjc4NWI3ZTIxMmQzOWZlYmM4MDQ1ZDdjZjhiOGJhZGFiNjQwODI5ZSJ9.Z28DZ0xSXWblhe7woypg8WyJnZe0JexQ-X7uMEWMP5MAjk8kBo9qAeSuS3NlFhoWsOZYn5PraDpxxjOdQ2dVFyvKO93ETbeth9nD5bRlyQ4fVj_RLvxIYMCt3grznWg5by1mYOTCAOomTbKh1rqepC5yaDwMxpIYA1bOBldAg2Tg8KShfQD-lInT1yc_3-hw5D57BXOSpMHdY9XbD3xTmiccbvjl-OWCU9f6pIkalNxtAHFrGdYjDkhEZjky1V_n1GpqADHJhrpGilgAtaiNnbe9ztWTAZAJMCaj8UDjrzSIoD5Lg1eqnTYVwkNoqoryKs75sM82tbsN5BQoSmZw1g",
+        "session_state": {
+            "extraQueryParams": {
+                "authuser": "6"
+            }
+        },
+        "first_issued_at": 1644144020396,
+        "expires_at": 1644147619396,
+        "idpId": "google"
+    },
+    "tokenId": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE4MmU0NTBhMzVhMjA4MWZhYTFkOWFlMWQyZDc1YTBmMjNkOTFkZjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMjU1NzExNDk1NTYwLXA5bGdpcWVlMzhhdGY5dmQza3J2MG43NHFwYTJoMmIxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMjU1NzExNDk1NTYwLXA5bGdpcWVlMzhhdGY5dmQza3J2MG43NHFwYTJoMmIxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE4MzY4MDY1OTUyMzkxNjQyODE2IiwiZW1haWwiOiJxdWFuZ3RpZW5jbG9uZUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6Ik9kTHdFVFNfcGRta1FMYmdESExBSWciLCJuYW1lIjoiTMawdSBUaeG6v24iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFUWEFKeERYNEZmY1o4TEtvLXh4TURTRllUQm5weW9acmoydUlLYzd3U3g9czk2LWMiLCJnaXZlbl9uYW1lIjoiTMawdSIsImZhbWlseV9uYW1lIjoiVGnhur9uIiwibG9jYWxlIjoidmkiLCJpYXQiOjE2NDQxNDQwMjEsImV4cCI6MTY0NDE0NzYyMSwianRpIjoiMjc4NWI3ZTIxMmQzOWZlYmM4MDQ1ZDdjZjhiOGJhZGFiNjQwODI5ZSJ9.Z28DZ0xSXWblhe7woypg8WyJnZe0JexQ-X7uMEWMP5MAjk8kBo9qAeSuS3NlFhoWsOZYn5PraDpxxjOdQ2dVFyvKO93ETbeth9nD5bRlyQ4fVj_RLvxIYMCt3grznWg5by1mYOTCAOomTbKh1rqepC5yaDwMxpIYA1bOBldAg2Tg8KShfQD-lInT1yc_3-hw5D57BXOSpMHdY9XbD3xTmiccbvjl-OWCU9f6pIkalNxtAHFrGdYjDkhEZjky1V_n1GpqADHJhrpGilgAtaiNnbe9ztWTAZAJMCaj8UDjrzSIoD5Lg1eqnTYVwkNoqoryKs75sM82tbsN5BQoSmZw1g",
+    "accessToken": "ya29.A0ARrdaM-7ve5jNCpSONWmXDrkpgunn99XiHLyPhgnsQjstRsEj1Y_XV6TUxThgw_h0lxhO3yyBLG5tgb8TiFp5eZHdiRJn7fJFF2HFrhLS6m1KlR-ogfUdD3M3NQU670D5X35rvpk1QX8RDQr8B_iayIt_Rf-",
+    "profileObj": {
+        "googleId": "118368065952391642816",
+        "imageUrl": "https://lh3.googleusercontent.com/a/AATXAJxDX4FfcZ8LKo-xxMDSFYTBnpyoZrj2uIKc7wSx=s96-c",
+        "email": "quangtienclone@gmail.com",
+        "name": "Lưu Tiến",
+        "givenName": "Lưu",
+        "familyName": "Tiến"
+    }
+}
+ */

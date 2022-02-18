@@ -108,3 +108,24 @@ export const changePassword = (data) => {
     }
   };
 };
+
+export const googleSignin = (data) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: authConstants.SIGNUP_REQUEST });
+      const res = await axios.post("/google-signin", data);
+      const { token, user } = res.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({
+        type: authConstants.SIGNUP_SUCCESS,
+        payload: { token, user },
+      });
+    } catch (error) {
+      dispatch({
+        type: authConstants.SIGNUP_FAILURE,
+        payload: { error: error.response.data.error },
+      });
+    }
+  };
+};
