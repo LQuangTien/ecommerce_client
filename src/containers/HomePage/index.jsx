@@ -186,7 +186,10 @@ function HomePage() {
         {tabProducts.length > 0 &&
           tabProducts.map((product, index) => (
             <div className="col lg-3 product__card" key={product._id}>
-              <Link to={"/product/" + product._id} className="">
+              <Link
+                to={"/product/" + product._id}
+                className="product__card-wrapper"
+              >
                 <div className="product__badge">
                   {Number(product.sale) > 5 && (
                     <span className="product__badge-item product__badge-item--sale">

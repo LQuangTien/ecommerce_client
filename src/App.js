@@ -8,6 +8,7 @@ import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 import CartPage from "./containers/CartPage";
 import CheckoutPage from "./containers/CheckoutPage";
+import ComparePage from "./containers/ComparePage";
 import HomePage from "./containers/HomePage";
 import OrderDetailPage from "./containers/OrderDetailPage";
 import OrderPage from "./containers/OrderPage";
@@ -52,6 +53,7 @@ function App() {
             <Route path="/product/:productId" component={ProductDetailsPage} />
             <Route path="/products/:category" component={ProductPage} />
             <Route path="/search" component={SearchPage} />
+            <Route path="/compare" component={ComparePage} />
           </Switch>
         </Layout>
       </BrowserRouter>

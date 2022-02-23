@@ -219,3 +219,83 @@ export const getProductById = (params) => {
     }
   };
 };
+
+export const getProductByCompare = ({ id1, id2 }) => {
+  return async (dispatch) => {
+    dispatch({ type: productConstants.GET_COMPARE_REQUEST });
+    try {
+      const [res1, res2] = await Promise.all([
+        axios.get(`product/${id1}`),
+        axios.get(`product/${id2}`),
+      ]);
+      const productCompare = {
+        product1: {
+          ...res1.data.data,
+          price: res1.data.data.salePrice,
+        },
+        product2: {
+          ...res2.data.data,
+          price: res2.data.data.salePrice,
+        },
+      };
+
+      dispatch({
+        type: productConstants.GET_COMPARE_SUCCESS,
+        payload: { productCompare },
+      });
+    } catch (error) {
+      dispatch({
+        type: productConstants.GET_COMPARE_FAILURE,
+        payload: { error: error.response.data.error },
+      });
+    }
+  };
+};
+
+export const getProduct1 = (params) => {
+  return async (dispatch) => {
+    dispatch({ type: productConstants.GET_PRODUCT1_REQUEST });
+    let res;
+    try {
+      const { id } = params;
+      res = await axios.get(`product/${id}`);
+      const product1 = {
+        ...res.data.data,
+        price: res.data.data.salePrice,
+      };
+      dispatch({
+        type: productConstants.GET_PRODUCT1_SUCCESS,
+        payload: { product1 },
+      });
+    } catch (error) {
+      dispatch({
+        type: productConstants.GET_PRODUCT1_FAILURE,
+        payload: { error: error.response.data.error },
+      });
+    }
+  };
+};
+
+export const getProduct2 = (params) => {
+  return async (dispatch) => {
+    dispatch({ type: productConstants.GET_PRODUCT2_REQUEST });
+    let res;
+    try {
+      const { id } = params;
+      res = await axios.get(`product/${id}`);
+      const product2 = {
+        ...res.data.data,
+        price: res.data.data.salePrice,
+      };
+      dispatch({
+        type: productConstants.GET_PRODUCT2_SUCCESS,
+        payload: { product2 },
+      });
+    } catch (error) {
+      dispatch({
+        type: productConstants.GET_PRODUCT2_FAILURE,
+        payload: { error: error.response.data.error },
+      });
+    }
+  };
+};

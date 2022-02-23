@@ -97,7 +97,7 @@
 .product__card {
   margin-bottom: 2.4rem;
 }
-.product__card a {
+.product__card .product__card-wrapper {
   display: block;
   width: 100%;
   text-decoration: none;
@@ -105,10 +105,37 @@
   border-radius: 2px;
   border: 1px solid var(--border-color);
 }
-.product__card:hover a {
+.product__card:hover .product__card-wrapper {
   box-shadow: 0 0 0.6rem rgba(0, 0, 0, 0.1);
   transition: all 0.2s;
 }
+.product__compare-button-wrapper {
+  display: flex;
+  opacity: 0;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.product__compare-button {
+  cursor: pointer;
+  background-color: var(--primary);
+  color: white;
+  padding: 0.8rem 1.6rem;
+  opacity: 1;
+  transition: all 0.3s;
+  border: none;
+  text-transform: uppercase;
+}
+.product__card:hover .product__compare-button-wrapper {
+  opacity: 1;
+}
+.product__card:hover .product__compare-button {
+  opacity: 1;
+  transition: all 0.3s;
+}
+.product__card-wrapper a {
+  text-decoration: none;
+}
+
 .product__image {
   width: 10rem;
   height: 20rem;

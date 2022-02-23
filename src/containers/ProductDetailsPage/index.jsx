@@ -150,6 +150,11 @@ const ProductDetailsPage = (props) => {
               </div>
             </div>
           </div>
+          <div className="row">
+            <p className="col lg-12 product__additional-products-tittle">
+              Comments (0)
+            </p>
+          </div>
           {hasSamebrand() && (
             <div className="row">
               <p className="col lg-12 product__additional-products-tittle">
@@ -175,7 +180,10 @@ const ProductDetailsPage = (props) => {
                   .slice(0, 8)
                   .map((product, index) => (
                     <div className="product__card col lg-3" key={product._id}>
-                      <Link to={"/product/" + product._id}>
+                      <Link
+                        to={"/product/" + product._id}
+                        className="product__card-wrapper"
+                      >
                         <div className="product__badge">
                           {Number(product.sale) > 5 && (
                             <span className="product__badge-item product__badge-item--sale">
@@ -243,7 +251,10 @@ const ProductDetailsPage = (props) => {
                 .slice(0, 8)
                 .map((product, index) => (
                   <div className="product__card col lg-3" key={product._id}>
-                    <Link to={"/product/" + product._id}>
+                    <Link
+                      to={"/product/" + product._id}
+                      className="product__card-wrapper"
+                    >
                       <div className="product__badge">
                         {Number(product.sale) > 5 && (
                           <span className="product__badge-item product__badge-item--sale">

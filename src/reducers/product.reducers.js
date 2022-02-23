@@ -8,6 +8,10 @@ const initState = {
   productDetails: {},
   loading: false,
   totalPage: 0,
+  product1: null,
+  isGettingProduct1: false,
+  product2: null,
+  isGettingProduct2: false,
 };
 
 const productReducer = (state = initState, action) => {
@@ -93,6 +97,47 @@ const productReducer = (state = initState, action) => {
       state = {
         ...state,
         loading: false,
+        error: action.payload.error,
+      };
+      break;
+    case productConstants.GET_PRODUCT1_REQUEST:
+      state = {
+        ...state,
+        isGettingProduct1: true,
+        product2: null,
+      };
+      break;
+    case productConstants.GET_PRODUCT1_SUCCESS:
+      state = {
+        ...state,
+        isGettingProduct1: false,
+        product1: action.payload.product1,
+      };
+      break;
+    case productConstants.GET_PRODUCT1_FAILURE:
+      state = {
+        ...state,
+        isGettingProduct1: false,
+        error: action.payload.error,
+      };
+      break;
+    case productConstants.GET_PRODUCT2_REQUEST:
+      state = {
+        ...state,
+        isGettingProduct2: true,
+      };
+      break;
+    case productConstants.GET_PRODUCT2_SUCCESS:
+      state = {
+        ...state,
+        isGettingProduct2: false,
+        product2: action.payload.product2,
+      };
+      break;
+    case productConstants.GET_PRODUCT2_FAILURE:
+      state = {
+        ...state,
+        isGettingProduct2: false,
         error: action.payload.error,
       };
       break;

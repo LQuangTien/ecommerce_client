@@ -542,7 +542,10 @@ function SearchPage(props) {
                       className="product__card col lg-3 md-6 sm-12"
                       key={products[key]._id}
                     >
-                      <Link to={"/product/" + products[key]._id} className="">
+                      <Link
+                        to={"/product/" + products[key]._id}
+                        className="product__card-wrapper"
+                      >
                         <div className="product__badge">
                           {Number(products[key].sale) > 5 && (
                             <span className="product__badge-item product__badge-item--sale">

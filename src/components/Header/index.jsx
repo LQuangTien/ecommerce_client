@@ -172,13 +172,13 @@ const Header = (props) => {
               cookiePolicy={"single_host_origin"}
               className="google-button mt-16"
             />
-            <FacebookLogin
+            {/* <FacebookLogin
               // appId="1272565219898979"
               appId="5169654406399994"
               autoLoad={true}
               fields="name,email,picture"
               callback={responseFacebook}
-            />
+            /> */}
             <p className="socials__label mt-16">Hope you have fun with us</p>
             <div className="mt-12">
               <div className="logo">
