@@ -299,3 +299,119 @@ export const getProduct2 = (params) => {
     }
   };
 };
+
+export const submitComment = (comment) => {
+  return async (dispatch) => {
+    dispatch({ type: productConstants.COMMENT_REQUEST });
+    try {
+      const fakeMock = () =>
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(comment);
+          }, 500);
+        });
+      const res = await fakeMock();
+      console.log(res);
+      dispatch({
+        type: productConstants.COMMENT_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({
+        type: productConstants.COMMENT_FAILURE,
+        payload: { error: error.response.data.error },
+      });
+    }
+  };
+};
+
+export const getComments = ({ id, page }) => {
+  return async (dispatch) => {
+    dispatch({ type: productConstants.GET_COMMENTS_REQUEST });
+    try {
+      const fakeMock = () =>
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve([
+              {
+                id: 11,
+                username: `Tien Luu id: ${id} page: ${page}`,
+                rating: 4,
+                comment: "This item is perfect",
+                replies: [
+                  {
+                    id: 12,
+                    username: `Tien Luu id: ${id} page: ${page}`,
+                    comment: "This item is perfect",
+                  },
+                  {
+                    id: 12,
+                    username: `Tien Luu id: ${id} page: ${page}`,
+                    comment: "This item is perfect",
+                  },
+                  {
+                    id: 12,
+                    username: `Tien Luu id: ${id} page: ${page}`,
+                    comment: "This item is perfect",
+                  },
+                ],
+              },
+              {
+                id: 21,
+                username: "Tien Luu",
+                rating: 5,
+                comment: "This item is perfect",
+                replies: [
+                  {
+                    id: 22,
+                    username: `Tien Luu id: ${id} page: ${page}`,
+                    comment: "This item is perfect",
+                  },
+                  {
+                    id: 23,
+                    username: `Tien Luu id: ${id} page: ${page}`,
+                    comment: "This item is perfect",
+                  },
+                  {
+                    id: 24,
+                    username: `Tien Luu id: ${id} page: ${page}`,
+                    comment: "This item is perfect",
+                  },
+                ],
+              },
+              {
+                id: 31,
+                username: "Tien Luu",
+                rating: 2,
+                comment: "This item is perfect",
+                replies: [],
+              },
+              {
+                id: 41,
+                username: "Tien Luu",
+                rating: 4,
+                comment: "This item is perfect",
+                replies: [],
+              },
+              {
+                id: 51,
+                username: "Tien Luu",
+                rating: 5,
+                comment: "This item is perfect",
+                replies: [],
+              },
+            ]);
+          }, 500);
+        });
+      const res = await fakeMock();
+      dispatch({
+        type: productConstants.GET_COMMENTS_SUCCESS,
+        payload: { comments: res, totalCommentPage: 5 },
+      });
+    } catch (error) {
+      dispatch({
+        type: productConstants.GET_COMMENTS_FAILURE,
+        payload: { error: error.response.data.error },
+      });
+    }
+  };
+};

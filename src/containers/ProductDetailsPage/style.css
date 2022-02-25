@@ -121,3 +121,135 @@
   margin-bottom: 1.2rem;
   text-transform: uppercase;
 }
+
+.comment__average {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.comment__average-title {
+  font-size: 1.6rem;
+}
+.comment__rating {
+  font-size: 4.8rem;
+  color: var(--red);
+}
+.comment__stars {
+  font-size: 2rem;
+}
+.comment__star {
+  color: var(--star);
+}
+.comment__star--gray {
+  color: var(--gray);
+}
+
+.comment__rating-bars {
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.comment__rating-bar-wrapper {
+  display: flex;
+  align-items: center;
+}
+.comment__rating-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+}
+.comment__rating-bar {
+  height: 8px;
+  background-color: var(--green);
+  width: 300px;
+  border-radius: 999px;
+  margin: 0 0.4rem;
+}
+.comment__rating-count {
+  font-size: 1.4rem;
+}
+.comment__rating-bar--gray {
+  background-color: var(--gray);
+}
+
+.cmt {
+  padding: 1.2rem 2rem;
+  border: 1px solid #eee;
+}
+.cmt:not(:last-child) {
+  border-bottom: none;
+}
+.cmt__username {
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+.cmt__stars-wrapper {
+  display: flex;
+  align-self: center;
+  font-size: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.cmt__stars {
+  display: flex;
+  align-items: center;
+  color: var(--star);
+  margin-right: 0.4rem;
+}
+.cmt__content {
+  font-size: 1.4rem;
+}
+.cmt__input {
+  padding: 1.2rem 1.6rem;
+  width: 100%;
+  min-height: 100px;
+  font-family: sans-serif;
+  border: 1px solid #eee;
+  margin-bottom: 0.4em;
+}
+.cmt__heading {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+  margin-top: 1.8rem;
+}
+
+.give-rating-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.give-rating-title {
+  font-size: 1.8rem;
+  margin-bottom: 0.4rem;
+}
+.give-rating-star {
+  font-size: 3rem;
+}
+
+.cmt__button {
+  color: white;
+  margin-bottom: 1.8rem;
+  width: 200px;
+}
+
+.cmt__reply {
+  margin-top: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.cmt__reply:hover {
+  cursor: pointer;
+  color: var(--primary);
+}
+
+.cmt--sub {
+  padding-left: 3rem;
+  margin-left: 3rem;
+  border-left: 4px solid var(--primary);
+  margin-top: 2rem;
+}

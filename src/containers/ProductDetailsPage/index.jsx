@@ -2,14 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import { Link } from "react-router-dom";
-import { getAll, getProductById } from "../../actions";
+import {
+  getAll,
+  getComments,
+  getProductById,
+  submitComment,
+} from "../../actions";
 import { addToCart } from "../../actions/cart.actions";
 import Banner from "../../components/UI/Banner";
 import Button from "../../components/UI/Button";
 import { generatePictureUrl } from "../../urlConfig";
 import formatThousand from "../../utils/formatThousand";
 import { isNew } from "../../utils/isNew";
+import { IoStar } from "react-icons/io5";
 import "./style.css";
+import ReactPaginate from "react-paginate";
 
 /**
  * @author
@@ -19,11 +26,19 @@ import "./style.css";
 const ProductDetailsPage = (props) => {
   const dispatch = useDispatch();
   const [brand, setBrand] = useState("");
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [commentPage, setCommentPage] = useState(1);
+  const [comment, setComment] = useState("");
+  const [showReply, setShowReply] = useState("");
+  const [reply, setReply] = useState("");
   const product = useSelector((state) => state.products);
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
-  const { products } = useSelector((state) => state.products);
+  const { products, comments, totalCommentPage } = useSelector(
+    (state) => state.products
+  );
   const { productId } = props.match.params;
   useEffect(() => {
     const params = {
@@ -31,6 +46,10 @@ const ProductDetailsPage = (props) => {
     };
     dispatch(getProductById(params));
   }, [dispatch, productId]);
+
+  useEffect(() => {
+    dispatch(getComments({ id: productId, page: commentPage }));
+  }, [dispatch, productId, commentPage]);
   useEffect(() => {
     if (Object.keys(product.productDetails).length <= 0) return;
     const index = product.productDetails.categoryInfo.findIndex(
@@ -63,6 +82,14 @@ const ProductDetailsPage = (props) => {
       return false;
     });
     return items.length > 0;
+  };
+
+  const handleSubmitComment = () => {
+    dispatch(submitComment({ rating, comment }));
+  };
+
+  const handleSubmitReply = (id) => {
+    console.log({ id, reply });
   };
   return (
     <>
@@ -150,10 +177,175 @@ const ProductDetailsPage = (props) => {
               </div>
             </div>
           </div>
-          <div className="row">
+          <div className="row comment">
             <p className="col lg-12 product__additional-products-tittle">
               Comments (0)
             </p>
+            <div className="col sm-12">
+              <div className="row">
+                <div className="col sm-3 comment__average">
+                  <p className="comment__average-title">Average Rating</p>
+                  <p className="comment__rating">5/5</p>
+                  <div className="comment__stars">
+                    <IoStar className="comment__star" />
+                    <IoStar className="comment__star" />
+                    <IoStar className="comment__star" />
+                    <IoStar className="comment__star" />
+                    <IoStar className="comment__star--gray" />
+                  </div>
+                </div>
+                <div className="col sm-3 comment__rating-bars">
+                  <div className="comment__rating-bar-wrapper">
+                    <div className="comment__rating-title">
+                      5 <IoStar className="comment__star" />
+                    </div>
+                    <div className="comment__rating-bar"></div>
+                    <div className="comment__rating-count">9</div>
+                  </div>
+                  <div className="comment__rating-bar-wrapper">
+                    <div className="comment__rating-title">
+                      4 <IoStar className="comment__star" />
+                    </div>
+                    <div className="comment__rating-bar"></div>
+                    <div className="comment__rating-count">4</div>
+                  </div>
+                  <div className="comment__rating-bar-wrapper">
+                    <div className="comment__rating-title">
+                      3 <IoStar className="comment__star" />
+                    </div>
+                    <div className="comment__rating-bar"></div>
+                    <div className="comment__rating-count">7</div>
+                  </div>
+                  <div className="comment__rating-bar-wrapper">
+                    <div className="comment__rating-title">
+                      2 <IoStar className="comment__star" />
+                    </div>
+                    <div className="comment__rating-bar"></div>
+                    <div className="comment__rating-count">3</div>
+                  </div>
+                  <div className="comment__rating-bar-wrapper">
+                    <div className="comment__rating-title">
+                      1 <IoStar className="comment__star" />
+                    </div>
+                    <div className="comment__rating-bar comment__rating-bar--gray"></div>
+                    <div className="comment__rating-count">2</div>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col sm-4 give-rating-wrapper">
+                  <p className="give-rating-title">
+                    How many stars do you rate this product?
+                  </p>
+                  <div className="give-rating-star">
+                    {[...Array(5)].map((star, index) => {
+                      index += 1;
+                      return (
+                        <IoStar
+                          key={index}
+                          className={
+                            index <= (hover || rating)
+                              ? "comment__star"
+                              : "comment__star--gray"
+                          }
+                          onClick={() => setRating(index)}
+                          onMouseEnter={() => setHover(index)}
+                          onMouseLeave={() => setHover(rating)}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="col sm-8">
+                  <p className="cmt__heading">Leave your comment here</p>
+
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="cmt__input"
+                  ></textarea>
+                  <Button
+                    onClick={handleSubmitComment}
+                    className="cmt__button"
+                    title={"Submit"}
+                  ></Button>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col sm-12">
+                  {comments &&
+                    comments.map((c, index) => (
+                      <>
+                        <div className="cmt">
+                          <p className="cmt__username">{c.username}</p>
+                          <p className="cmt__stars-wrapper">
+                            <span className="cmt__stars">
+                              {[...Array(5)].map((star, index) => (
+                                <IoStar
+                                  className={
+                                    c.rating >= index + 1
+                                      ? ""
+                                      : "comment__star--gray"
+                                  }
+                                />
+                              ))}
+                            </span>
+                            <span> at 19/01/2022</span>
+                          </p>
+                          <p className="cmt__content">{c.comment}</p>
+                          <p
+                            className="cmt__reply"
+                            onClick={() => {
+                              setShowReply(c.id);
+                              setReply("");
+                            }}
+                          >
+                            Reply
+                          </p>
+                          {showReply === c.id && (
+                            <>
+                              <textarea
+                                value={reply}
+                                onChange={(e) => setReply(e.target.value)}
+                                className="cmt__input mt-8"
+                              ></textarea>
+                              <Button
+                                onClick={() => handleSubmitReply(c.id)}
+                                className="cmt__button"
+                                title={"Submit"}
+                              ></Button>
+                            </>
+                          )}
+                          {c.replies.map((r) => (
+                            <div className="cmt--sub">
+                              <p className="cmt__username">{r.username}</p>
+                              <p className="cmt__stars-wrapper">
+                                <span>At 19/01/2022</span>
+                              </p>
+                              <p className="cmt__content">{r.comment}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    ))}
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    nextLabel={">"}
+                    breakLabel={"..."}
+                    breakClassName={"break-me"}
+                    pageCount={totalCommentPage}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    forcePage={Number(commentPage - 1) || 0}
+                    onPageChange={(activePage) =>
+                      setCommentPage(() => +activePage.selected + 1)
+                    }
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           {hasSamebrand() && (
             <div className="row">

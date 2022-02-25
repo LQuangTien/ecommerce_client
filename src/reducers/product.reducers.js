@@ -12,6 +12,10 @@ const initState = {
   isGettingProduct1: false,
   product2: null,
   isGettingProduct2: false,
+  isCommenting: false,
+  comments: null,
+  isGetComments: false,
+  totalCommentPage: 1,
 };
 
 const productReducer = (state = initState, action) => {
@@ -139,6 +143,45 @@ const productReducer = (state = initState, action) => {
         ...state,
         isGettingProduct2: false,
         error: action.payload.error,
+      };
+      break;
+    case productConstants.COMMENT_REQUEST:
+      state = {
+        ...state,
+        isCommenting: true,
+      };
+      break;
+    case productConstants.COMMENT_SUCCESS:
+      state = {
+        ...state,
+        isCommenting: false,
+      };
+      break;
+    case productConstants.COMMENT_FAILURE:
+      state = {
+        ...state,
+        isCommenting: false,
+      };
+      break;
+    case productConstants.GET_COMMENTS_REQUEST:
+      state = {
+        ...state,
+        isGetComments: true,
+      };
+      break;
+    case productConstants.GET_COMMENTS_SUCCESS:
+      state = {
+        ...state,
+        comments: action.payload.comments,
+        isGetComments: false,
+        totalCommentPage: action.payload.totalCommentPage,
+      };
+      break;
+    case productConstants.GET_COMMENTS_FAILURE:
+      state = {
+        ...state,
+        comments: null,
+        isGetComments: false,
       };
       break;
     default:
