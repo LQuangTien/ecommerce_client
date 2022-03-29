@@ -16,11 +16,29 @@ import ProductDetailsPage from "./containers/ProductDetailsPage";
 import ProductPage from "./containers/ProductsPage";
 import SearchPage from "./containers/SearchPage";
 import PrivateRoute from "./helpers/privateRoute";
+import { io } from 'socket.io-client';
+import { domain } from "./urlConfig";
+
+let socket;
+
+export const initiateSocketConnection = () => {
+  socket = io(domain);
+  console.log(`Connecting socket...`);
+}
+export const subscribeToChat = (cb) => {
+  socket.emit('my message', 'Hello there from React.');
+}
 
 function App() {
   const auth = useSelector((state) => state.auth);
   const user = JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    initiateSocketConnection();
+    subscribeToChat();
+  }, []);
+
   useEffect(() => {
     if (!auth.authenticate) {
       dispatch(isUserLoggedIn());
