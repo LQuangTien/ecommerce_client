@@ -68,14 +68,16 @@ function App() {
             <PrivateRoute path="/account/order" isAuthenticated={user}>
               <OrderPage />
             </PrivateRoute>
-            <Route path="/product/:productId" component={ProductDetailsPage} />
+            <Route path="/product/:productId" >
+              <ProductDetailsPage socket={socket} />
+            </Route>
             <Route path="/products/:category" component={ProductPage} />
             <Route path="/search" component={SearchPage} />
             <Route path="/compare" component={ComparePage} />
           </Switch>
         </Layout>
       </BrowserRouter>
-    </div>
+    </div >
   );
 }
 

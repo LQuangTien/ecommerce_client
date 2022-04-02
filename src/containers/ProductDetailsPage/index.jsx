@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   getAll,
   getComments,
@@ -24,6 +24,7 @@ import ReactPaginate from "react-paginate";
  **/
 
 const ProductDetailsPage = (props) => {
+  const { socket } = props;
   const dispatch = useDispatch();
   const [brand, setBrand] = useState("");
   const [rating, setRating] = useState(0);
@@ -39,7 +40,8 @@ const ProductDetailsPage = (props) => {
   const { products, comments, totalCommentPage } = useSelector(
     (state) => state.products
   );
-  const { productId } = props.match.params;
+  const { productId } = useParams();
+
   useEffect(() => {
     const params = {
       id: productId,
@@ -85,7 +87,9 @@ const ProductDetailsPage = (props) => {
   };
 
   const handleSubmitComment = () => {
-    dispatch(submitComment({ rating, comment }));
+    socket.emit("my message", "Hello there from React.");
+
+    // dispatch(submitComment({ rating, comment }));
   };
 
   const handleSubmitReply = (id) => {
