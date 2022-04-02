@@ -34,6 +34,8 @@ const ProductDetailsPage = (props) => {
   const [showReply, setShowReply] = useState("");
   const [reply, setReply] = useState("");
   const product = useSelector((state) => state.products);
+  const auth = useSelector((state) => state.auth);
+  const user = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
@@ -87,14 +89,18 @@ const ProductDetailsPage = (props) => {
   };
 
   const handleSubmitComment = () => {
-    const data = {
-      rating,
-      comment,
-      productId,
-      productName: product.productDetails.name,
-    };
-    console.log(data);
-    socket.emit("submit", data);
+    if (auth.authenticate) {
+      const data = {
+        rating,
+        comment,
+        productId,
+        productName: product.productDetails.name,
+      };
+      console.log(data);
+      socket.emit("submit", data);
+    } else {
+      alert("please login");
+    }
 
     // dispatch(submitComment({ rating, comment }));
   };

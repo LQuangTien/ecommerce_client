@@ -16,7 +16,7 @@ import ProductDetailsPage from "./containers/ProductDetailsPage";
 import ProductPage from "./containers/ProductsPage";
 import SearchPage from "./containers/SearchPage";
 import PrivateRoute from "./helpers/privateRoute";
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 import { domain } from "./urlConfig";
 
 let socket;
@@ -24,14 +24,15 @@ let socket;
 export const initiateSocketConnection = () => {
   socket = io(domain);
   console.log(`Connecting socket...`);
-}
+};
 export const subscribeToChat = (cb) => {
-  socket.emit('my message', 'Hello there from React.');
-}
+  socket.emit("my message", "Hello there from React.");
+};
 
 function App() {
   const auth = useSelector((state) => state.auth);
   const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -47,6 +48,13 @@ function App() {
   useEffect(() => {
     dispatch(updateCart());
   }, [auth.authenticate, dispatch]);
+
+  useEffect(() => {
+    if (auth.authenticate) {
+      console.log(token);
+      socket.emit("onUserLoggedIn", token);
+    }
+  }, [auth.authenticate, dispatch, token]);
   return (
     <div className="App">
       <BrowserRouter>
@@ -68,7 +76,7 @@ function App() {
             <PrivateRoute path="/account/order" isAuthenticated={user}>
               <OrderPage />
             </PrivateRoute>
-            <Route path="/product/:productId" >
+            <Route path="/product/:productId">
               <ProductDetailsPage socket={socket} />
             </Route>
             <Route path="/products/:category" component={ProductPage} />
@@ -77,7 +85,7 @@ function App() {
           </Switch>
         </Layout>
       </BrowserRouter>
-    </div >
+    </div>
   );
 }
 
