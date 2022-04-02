@@ -87,7 +87,14 @@ const ProductDetailsPage = (props) => {
   };
 
   const handleSubmitComment = () => {
-    socket.emit("my message", "Hello there from React.");
+    const data = {
+      rating,
+      comment,
+      productId,
+      productName: product.productDetails.name,
+    };
+    console.log(data);
+    socket.emit("submit", data);
 
     // dispatch(submitComment({ rating, comment }));
   };
