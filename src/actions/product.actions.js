@@ -328,84 +328,30 @@ export const getComments = ({ id, page }) => {
   return async (dispatch) => {
     dispatch({ type: productConstants.GET_COMMENTS_REQUEST });
     try {
-      const fakeMock = () =>
-        new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve([
-              {
-                id: 11,
-                username: `Tien Luu id: ${id} page: ${page}`,
-                rating: 4,
-                comment: "This item is perfect",
-                replies: [
-                  {
-                    id: 12,
-                    username: `Tien Luu id: ${id} page: ${page}`,
-                    comment: "This item is perfect",
-                  },
-                  {
-                    id: 12,
-                    username: `Tien Luu id: ${id} page: ${page}`,
-                    comment: "This item is perfect",
-                  },
-                  {
-                    id: 12,
-                    username: `Tien Luu id: ${id} page: ${page}`,
-                    comment: "This item is perfect",
-                  },
-                ],
-              },
-              {
-                id: 21,
-                username: "Tien Luu",
-                rating: 5,
-                comment: "This item is perfect",
-                replies: [
-                  {
-                    id: 22,
-                    username: `Tien Luu id: ${id} page: ${page}`,
-                    comment: "This item is perfect",
-                  },
-                  {
-                    id: 23,
-                    username: `Tien Luu id: ${id} page: ${page}`,
-                    comment: "This item is perfect",
-                  },
-                  {
-                    id: 24,
-                    username: `Tien Luu id: ${id} page: ${page}`,
-                    comment: "This item is perfect",
-                  },
-                ],
-              },
-              {
-                id: 31,
-                username: "Tien Luu",
-                rating: 2,
-                comment: "This item is perfect",
-                replies: [],
-              },
-              {
-                id: 41,
-                username: "Tien Luu",
-                rating: 4,
-                comment: "This item is perfect",
-                replies: [],
-              },
-              {
-                id: 51,
-                username: "Tien Luu",
-                rating: 5,
-                comment: "This item is perfect",
-                replies: [],
-              },
-            ]);
-          }, 500);
-        });
-      const res = await fakeMock();
+      const res = await axios.get(`/product/comment/${id}/${page}/10`);
+      const data = {
+        comments: res.data.data.result.products.map(
+          (item) =>
+            item.comment.map((c) => ({
+              id: c._id,
+              username: c.userName,
+              rating: c.rating,
+              comment: c.content,
+              replies: c.subComment,
+              createdAt: item.createdAt,
+            }))[0]
+        ),
+        totalPage: res.data.data.result.totalPage,
+        page: res.data.data.result.currentPage,
+      };
+
       dispatch({
         type: productConstants.GET_COMMENTS_SUCCESS,
-        payload: { comments: res, totalCommentPage: 5 },
+        payload: {
+          comments: data.comments,
+          totalCommentPage: data.totalPage,
+          commentPage: data.page,
+        },
       });
     } catch (error) {
       dispatch({

@@ -54,6 +54,17 @@ const ProductDetailsPage = (props) => {
   useEffect(() => {
     dispatch(getComments({ id: productId, page: commentPage }));
   }, [dispatch, productId, commentPage]);
+
+  useEffect(() => {
+    if (socket) {
+      const listener = (message) => {
+        dispatch(getComments({ id: productId, page: 1 }));
+      };
+      socket.on("submit", listener);
+
+      return () => socket.off("submit", listener);
+    }
+  }, [dispatch, productId, socket]);
   useEffect(() => {
     if (Object.keys(product.productDetails).length <= 0) return;
     const index = product.productDetails.categoryInfo.findIndex(
@@ -307,7 +318,10 @@ const ProductDetailsPage = (props) => {
                                 />
                               ))}
                             </span>
-                            <span> at 19/01/2022</span>
+                            <span>
+                              {" "}
+                              at {new Date(c.createdAt).toLocaleString("vi-VN")}
+                            </span>
                           </p>
                           <p className="cmt__content">{c.comment}</p>
                           <p

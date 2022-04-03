@@ -25,9 +25,6 @@ export const initiateSocketConnection = () => {
   socket = io(domain);
   console.log(`Connecting socket...`);
 };
-export const subscribeToChat = (cb) => {
-  socket.emit("my message", "Hello there from React.");
-};
 
 function App() {
   const auth = useSelector((state) => state.auth);
@@ -37,7 +34,6 @@ function App() {
 
   useEffect(() => {
     initiateSocketConnection();
-    subscribeToChat();
   }, []);
 
   useEffect(() => {

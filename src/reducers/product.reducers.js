@@ -16,6 +16,7 @@ const initState = {
   comments: null,
   isGetComments: false,
   totalCommentPage: 1,
+  commentPage: 1,
 };
 
 const productReducer = (state = initState, action) => {
