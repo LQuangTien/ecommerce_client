@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import {
   getAll,
   getComments,
@@ -17,6 +17,8 @@ import { isNew } from "../../utils/isNew";
 import { IoStar } from "react-icons/io5";
 import "./style.css";
 import ReactPaginate from "react-paginate";
+import queryString from "query-string";
+import axios from "../../helpers/axios";
 
 /**
  * @author
@@ -35,7 +37,9 @@ const ProductDetailsPage = (props) => {
   const [reply, setReply] = useState("");
   const product = useSelector((state) => state.products);
   const auth = useSelector((state) => state.auth);
-  const user = JSON.parse(localStorage.getItem("user"));
+
+  const search = useLocation().search;
+  const { commentId } = queryString.parse(search);
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
@@ -43,6 +47,27 @@ const ProductDetailsPage = (props) => {
     (state) => state.products
   );
   const { productId } = useParams();
+
+  useEffect(() => {
+    if (commentId && comments && products) {
+      const getCommentPosition = async () => {
+        const res = await axios.get(
+          `products/getCommentPosition/10/${commentId}`
+        );
+        console.log(res.data);
+        const element = document.getElementById(commentId);
+        if (element) {
+          setTimeout(() => {
+            window.scrollTo({
+              behavior: element ? "smooth" : "auto",
+              top: element ? element.offsetTop : 0,
+            });
+          }, 100);
+        }
+      };
+      getCommentPosition();
+    }
+  }, [commentId, comments, products]);
 
   useEffect(() => {
     const params = {
@@ -303,61 +328,59 @@ const ProductDetailsPage = (props) => {
                 <div className="col sm-12">
                   {comments &&
                     comments.map((c, index) => (
-                      <>
-                        <div className="cmt">
-                          <p className="cmt__username">{c.username}</p>
-                          <p className="cmt__stars-wrapper">
-                            <span className="cmt__stars">
-                              {[...Array(5)].map((star, index) => (
-                                <IoStar
-                                  className={
-                                    c.rating >= index + 1
-                                      ? ""
-                                      : "comment__star--gray"
-                                  }
-                                />
-                              ))}
-                            </span>
-                            <span>
-                              {" "}
-                              at {new Date(c.createdAt).toLocaleString("vi-VN")}
-                            </span>
-                          </p>
-                          <p className="cmt__content">{c.comment}</p>
-                          <p
-                            className="cmt__reply"
-                            onClick={() => {
-                              setShowReply(c.id);
-                              setReply("");
-                            }}
-                          >
-                            Reply
-                          </p>
-                          {showReply === c.id && (
-                            <>
-                              <textarea
-                                value={reply}
-                                onChange={(e) => setReply(e.target.value)}
-                                className="cmt__input mt-8"
-                              ></textarea>
-                              <Button
-                                onClick={() => handleSubmitReply(c.id)}
-                                className="cmt__button"
-                                title={"Submit"}
-                              ></Button>
-                            </>
-                          )}
-                          {c.replies.map((r) => (
-                            <div className="cmt--sub">
-                              <p className="cmt__username">{r.username}</p>
-                              <p className="cmt__stars-wrapper">
-                                <span>At 19/01/2022</span>
-                              </p>
-                              <p className="cmt__content">{r.comment}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </>
+                      <div id={c.id} key={c.id} className="cmt">
+                        <p className="cmt__username">{c.username}</p>
+                        <p className="cmt__stars-wrapper">
+                          <span className="cmt__stars">
+                            {[...Array(5)].map((star, index) => (
+                              <IoStar
+                                className={
+                                  c.rating >= index + 1
+                                    ? ""
+                                    : "comment__star--gray"
+                                }
+                              />
+                            ))}
+                          </span>
+                          <span>
+                            {" "}
+                            at {new Date(c.createdAt).toLocaleString("vi-VN")}
+                          </span>
+                        </p>
+                        <p className="cmt__content">{c.comment}</p>
+                        <p
+                          className="cmt__reply"
+                          onClick={() => {
+                            setShowReply(c.id);
+                            setReply("");
+                          }}
+                        >
+                          Reply
+                        </p>
+                        {showReply === c.id && (
+                          <>
+                            <textarea
+                              value={reply}
+                              onChange={(e) => setReply(e.target.value)}
+                              className="cmt__input mt-8"
+                            ></textarea>
+                            <Button
+                              onClick={() => handleSubmitReply(c.id)}
+                              className="cmt__button"
+                              title={"Submit"}
+                            ></Button>
+                          </>
+                        )}
+                        {c.replies.map((r) => (
+                          <div className="cmt--sub">
+                            <p className="cmt__username">{r.username}</p>
+                            <p className="cmt__stars-wrapper">
+                              <span>At 19/01/2022</span>
+                            </p>
+                            <p className="cmt__content">{r.comment}</p>
+                          </div>
+                        ))}
+                      </div>
                     ))}
                   <ReactPaginate
                     previousLabel={"<"}

@@ -330,10 +330,10 @@ export const getComments = ({ id, page }) => {
     try {
       const res = await axios.get(`/product/comment/${id}/${page}/10`);
       const data = {
-        comments: res.data.data.result.products.map(
+        comments: res.data.data.result.items.map(
           (item) =>
             item.comment.map((c) => ({
-              id: c._id,
+              id: item._id,
               username: c.userName,
               rating: c.rating,
               comment: c.content,
