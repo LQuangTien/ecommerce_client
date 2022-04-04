@@ -329,6 +329,19 @@ export const getComments = ({ id, page }) => {
     dispatch({ type: productConstants.GET_COMMENTS_REQUEST });
     try {
       const res = await axios.get(`/product/comment/${id}/${page}/10`);
+      console.log(
+        res.data.data.result.items.map(
+          (item) =>
+            item.comment.map((c) => ({
+              id: item._id,
+              username: c.userName,
+              rating: c.rating,
+              comment: c.content,
+              replies: c.subComment,
+              createdAt: item.createdAt,
+            }))[0]
+        )
+      );
       const data = {
         comments: res.data.data.result.items.map(
           (item) =>

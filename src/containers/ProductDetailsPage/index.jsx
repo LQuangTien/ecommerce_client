@@ -326,7 +326,7 @@ const ProductDetailsPage = (props) => {
               </div>
               <div className="row">
                 <div className="col sm-12">
-                  {comments &&
+                  {comments[0] &&
                     comments.map((c, index) => (
                       <div id={c.id} key={c.id} className="cmt">
                         <p className="cmt__username">{c.username}</p>
@@ -382,21 +382,23 @@ const ProductDetailsPage = (props) => {
                         ))}
                       </div>
                     ))}
-                  <ReactPaginate
-                    previousLabel={"<"}
-                    nextLabel={">"}
-                    breakLabel={"..."}
-                    breakClassName={"break-me"}
-                    pageCount={totalCommentPage}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    forcePage={Number(commentPage - 1) || 0}
-                    onPageChange={(activePage) =>
-                      setCommentPage(() => +activePage.selected + 1)
-                    }
-                    containerClassName={"pagination"}
-                    activeClassName={"active"}
-                  />
+                  {comments[0] && (
+                    <ReactPaginate
+                      previousLabel={"<"}
+                      nextLabel={">"}
+                      breakLabel={"..."}
+                      breakClassName={"break-me"}
+                      pageCount={totalCommentPage}
+                      marginPagesDisplayed={2}
+                      pageRangeDisplayed={5}
+                      forcePage={Number(commentPage - 1) || 0}
+                      onPageChange={(activePage) =>
+                        setCommentPage(() => +activePage.selected + 1)
+                      }
+                      containerClassName={"pagination"}
+                      activeClassName={"active"}
+                    />
+                  )}
                 </div>
               </div>
             </div>
