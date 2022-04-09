@@ -62,7 +62,7 @@ export const getByQuery = (params, size = initParams.pageSize) => {
       });
       const result = {
         ...res.data.data,
-        products: res.data.data.products.map((product) => ({
+        products: res.data.data.items.map((product) => ({
           ...product,
           price: product.salePrice,
         })),
@@ -107,7 +107,7 @@ export const getBySearch = (params, size = initParams.pageSize) => {
       });
       const result = {
         ...res.data.data,
-        products: res.data.data.products.map((product) => ({
+        products: res.data.data.items.map((product) => ({
           ...product,
           price: product.salePrice,
         })),
@@ -330,30 +330,24 @@ export const getComments = ({ id, page }) => {
     try {
       const res = await axios.get(`/product/comment/${id}/${page}/10`);
       console.log(
-        res.data.data.result.items.map(
-          (item) =>
-            item.comment.map((c) => ({
-              id: item._id,
-              username: c.userName,
-              rating: c.rating,
-              comment: c.content,
-              replies: c.subComment,
-              createdAt: item.createdAt,
-            }))[0]
-        )
+        res.data.data.result.items.map((i) => ({
+          id: i.comment._id,
+          username: i.comment.userName,
+          rating: i.comment.rating,
+          comment: i.comment.content,
+          replies: i.comment.subComment,
+          createdAt: i.comment.createdAt,
+        }))
       );
       const data = {
-        comments: res.data.data.result.items.map(
-          (item) =>
-            item.comment.map((c) => ({
-              id: item._id,
-              username: c.userName,
-              rating: c.rating,
-              comment: c.content,
-              replies: c.subComment,
-              createdAt: item.createdAt,
-            }))[0]
-        ),
+        comments: res.data.data.result.items.map((i) => ({
+          id: i.comment._id,
+          username: i.comment.userName,
+          rating: i.comment.rating,
+          comment: i.comment.content,
+          replies: i.comment.subComment,
+          createdAt: i.comment.createdAt,
+        })),
         totalPage: res.data.data.result.totalPage,
         page: res.data.data.result.currentPage,
       };

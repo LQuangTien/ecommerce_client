@@ -49,10 +49,10 @@ const ProductDetailsPage = (props) => {
   const { productId } = useParams();
 
   useEffect(() => {
-    if (commentId && comments && products) {
+    if (commentId && comments && products && productId) {
       const getCommentPosition = async () => {
         const res = await axios.get(
-          `products/getCommentPosition/10/${commentId}`
+          `products/getCommentPosition/10/${productId}/${commentId}`
         );
         console.log(res.data);
         const element = document.getElementById(commentId);
@@ -67,7 +67,7 @@ const ProductDetailsPage = (props) => {
       };
       getCommentPosition();
     }
-  }, [commentId, comments, products]);
+  }, [commentId, comments, productId, products]);
 
   useEffect(() => {
     const params = {
