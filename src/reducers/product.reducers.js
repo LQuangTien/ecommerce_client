@@ -17,6 +17,9 @@ const initState = {
   isGetComments: false,
   totalCommentPage: 1,
   commentPage: 1,
+  ratings: [0, 0, 0, 0, 0],
+  avgRating: 0,
+  totalComment: 0,
 };
 
 const productReducer = (state = initState, action) => {
@@ -174,6 +177,9 @@ const productReducer = (state = initState, action) => {
       state = {
         ...state,
         comments: action.payload.comments,
+        ratings: action.payload.ratings,
+        avgRating: action.payload.avgRating,
+        totalComment: action.payload.totalComment,
         isGetComments: false,
         totalCommentPage: action.payload.totalCommentPage,
       };

@@ -329,18 +329,8 @@ export const getComments = ({ id, page }) => {
     dispatch({ type: productConstants.GET_COMMENTS_REQUEST });
     try {
       const res = await axios.get(`/product/comment/${id}/${page}/10`);
-      console.log(
-        res.data.data.result.items.map((i) => ({
-          id: i.comment._id,
-          username: i.comment.userName,
-          rating: i.comment.rating,
-          comment: i.comment.content,
-          replies: i.comment.subComment,
-          createdAt: i.comment.createdAt,
-        }))
-      );
       const data = {
-        comments: res.data.data.result.items.map((i) => ({
+        comments: res.data.data.result.result.items.map((i) => ({
           id: i.comment._id,
           username: i.comment.userName,
           rating: i.comment.rating,
@@ -348,9 +338,22 @@ export const getComments = ({ id, page }) => {
           replies: i.comment.subComment,
           createdAt: i.comment.createdAt,
         })),
-        totalPage: res.data.data.result.totalPage,
-        page: res.data.data.result.currentPage,
+        totalPage: res.data.data.result.result.totalPage,
+        page: res.data.data.result.result.currentPage,
       };
+      const ratingsSort = res.data.data.total.sort((a, b) => b._id - a._id);
+      const sum = (arr) => arr.reduce((p, c) => p + c, 0);
+      const totalCount = sum(ratingsSort.map((r) => r.count));
+      const ratings = ratingsSort.map((r) => ({
+        ...r,
+        star: r._id,
+        percent: Number(((r.count / totalCount) * 100).toFixed(0)),
+      }));
+      ratings[ratings.length - 1].percent =
+        100 - sum(ratings.slice(0, -1).map((x) => x.percent));
+      const average = (arr) => Math.round(totalCount / arr.length);
+      const avg = average(ratings.map((r) => r.count));
+      const avgRating = avg > 5 ? 5 : avg;
 
       dispatch({
         type: productConstants.GET_COMMENTS_SUCCESS,
@@ -358,6 +361,9 @@ export const getComments = ({ id, page }) => {
           comments: data.comments,
           totalCommentPage: data.totalPage,
           commentPage: data.page,
+          ratings,
+          avgRating,
+          totalComment: totalCount,
         },
       });
     } catch (error) {

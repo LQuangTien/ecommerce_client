@@ -45,9 +45,14 @@ const ProductDetailsPage = (props) => {
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
-  const { products, comments, totalCommentPage } = useSelector(
-    (state) => state.products
-  );
+  const {
+    products,
+    comments,
+    totalCommentPage,
+    ratings,
+    avgRating,
+    totalComment,
+  } = useSelector((state) => state.products);
   const { productId } = useParams();
 
   useEffect(() => {
@@ -175,11 +180,13 @@ const ProductDetailsPage = (props) => {
                 showStatus={false}
                 showThumbs={false}
               >
-                {product.productDetails.productPictures.map((picture) => (
-                  <div className="picture__main">
-                    <img alt="" src={generatePictureUrl(picture)} />
-                  </div>
-                ))}
+                {product.productDetails.productPictures.map(
+                  (picture, index) => (
+                    <div key={index} className="picture__main">
+                      <img alt="" src={generatePictureUrl(picture)} />
+                    </div>
+                  )
+                )}
               </Carousel>
               <Button
                 onClick={handleAddToCart}
@@ -227,9 +234,11 @@ const ProductDetailsPage = (props) => {
                     <strong>Description</strong>
                   </p>
                   <ul className="detail__description">
-                    {product.productDetails.description.split("\n").map((a) => (
-                      <li>{a}</li>
-                    ))}
+                    {product.productDetails.description
+                      .split("\n")
+                      .map((a, index) => (
+                        <li key={index}>{a}</li>
+                      ))}
                   </ul>
                 </div>
                 <p className="system__title">
@@ -238,7 +247,7 @@ const ProductDetailsPage = (props) => {
                 <table className="system__table">
                   <tbody>
                     {product.productDetails.categoryInfo.map((info) => (
-                      <tr className="system__table-row">
+                      <tr key={info.name} className="system__table-row">
                         <th>{info.name}</th>
                         <td>{info.value}</td>
                       </tr>
@@ -250,57 +259,46 @@ const ProductDetailsPage = (props) => {
           </div>
           <div className="row comment">
             <p className="col lg-12 product__additional-products-tittle">
-              Comments (0)
+              Comments ({totalComment ?? 0})
             </p>
             <div className="col sm-12">
               <div className="row">
                 <div className="col sm-3 comment__average">
                   <p className="comment__average-title">Average Rating</p>
-                  <p className="comment__rating">5/5</p>
+                  <p className="comment__rating">{avgRating}/5</p>
                   <div className="comment__stars">
-                    <IoStar className="comment__star" />
-                    <IoStar className="comment__star" />
-                    <IoStar className="comment__star" />
-                    <IoStar className="comment__star" />
-                    <IoStar className="comment__star--gray" />
+                    {[...Array(5)].map((star, index) => {
+                      index += 1;
+                      return (
+                        <IoStar
+                          key={index}
+                          className={
+                            index <= avgRating
+                              ? "comment__star"
+                              : "comment__star--gray"
+                          }
+                        />
+                      );
+                    })}
                   </div>
                 </div>
                 <div className="col sm-3 comment__rating-bars">
-                  <div className="comment__rating-bar-wrapper">
-                    <div className="comment__rating-title">
-                      5 <IoStar className="comment__star" />
+                  {ratings.map((r) => (
+                    <div key={r.star} className="comment__rating-bar-wrapper">
+                      <div className="comment__rating-title">
+                        {r.star} <IoStar className="comment__star" />
+                      </div>
+                      <div className="comment__rating-bar comment__rating-bar--gray">
+                        <div
+                          style={{ width: `${r.percent}%` }}
+                          className="comment__rating-bar-percent"
+                        ></div>
+                      </div>
+                      <div className="comment__rating-count">
+                        {r.count} ({r.percent}%)
+                      </div>
                     </div>
-                    <div className="comment__rating-bar"></div>
-                    <div className="comment__rating-count">9</div>
-                  </div>
-                  <div className="comment__rating-bar-wrapper">
-                    <div className="comment__rating-title">
-                      4 <IoStar className="comment__star" />
-                    </div>
-                    <div className="comment__rating-bar"></div>
-                    <div className="comment__rating-count">4</div>
-                  </div>
-                  <div className="comment__rating-bar-wrapper">
-                    <div className="comment__rating-title">
-                      3 <IoStar className="comment__star" />
-                    </div>
-                    <div className="comment__rating-bar"></div>
-                    <div className="comment__rating-count">7</div>
-                  </div>
-                  <div className="comment__rating-bar-wrapper">
-                    <div className="comment__rating-title">
-                      2 <IoStar className="comment__star" />
-                    </div>
-                    <div className="comment__rating-bar"></div>
-                    <div className="comment__rating-count">3</div>
-                  </div>
-                  <div className="comment__rating-bar-wrapper">
-                    <div className="comment__rating-title">
-                      1 <IoStar className="comment__star" />
-                    </div>
-                    <div className="comment__rating-bar comment__rating-bar--gray"></div>
-                    <div className="comment__rating-count">2</div>
-                  </div>
+                  ))}
                 </div>
               </div>
               <div className="row">
@@ -344,7 +342,7 @@ const ProductDetailsPage = (props) => {
               </div>
               <div className="row">
                 <div className="col sm-12">
-                  {comments[0] &&
+                  {comments?.length > 0 &&
                     comments.map((c, index) => (
                       <div id={c.id} key={c.id} className="cmt">
                         <p className="cmt__username">{c.username}</p>
@@ -352,6 +350,7 @@ const ProductDetailsPage = (props) => {
                           <span className="cmt__stars">
                             {[...Array(5)].map((star, index) => (
                               <IoStar
+                                key={index}
                                 className={
                                   c.rating >= index + 1
                                     ? ""
@@ -386,8 +385,8 @@ const ProductDetailsPage = (props) => {
                             ></Button>
                           </>
                         )}
-                        {c.replies.map((r) => (
-                          <div className="cmt--sub">
+                        {c.replies.map((r, index) => (
+                          <div key={index} className="cmt--sub">
                             <p className="cmt__username">{r.username}</p>
                             <p className="cmt__stars-wrapper">
                               <span>At 19/01/2022</span>
@@ -397,7 +396,7 @@ const ProductDetailsPage = (props) => {
                         ))}
                       </div>
                     ))}
-                  {comments[0] && (
+                  {comments?.length > 0 && (
                     <ReactPaginate
                       previousLabel={"<"}
                       nextLabel={">"}

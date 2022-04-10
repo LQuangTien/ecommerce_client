@@ -162,17 +162,26 @@
   letter-spacing: 2px;
 }
 .comment__rating-bar {
+  position: relative;
   height: 8px;
-  background-color: var(--green);
-  width: 300px;
+  min-width: 300px;
   border-radius: 999px;
   margin: 0 0.4rem;
 }
 .comment__rating-count {
   font-size: 1.4rem;
+  white-space: nowrap;
 }
+.comment__rating-bar-percent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--green);
+}
+
 .comment__rating-bar--gray {
-  background-color: var(--gray);
+  background-color: rgba(102, 102, 102, 0.2);
 }
 
 .cmt {
