@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useHistory } from "react-router-dom";
 import {
   getAll,
   getComments,
@@ -19,6 +19,7 @@ import "./style.css";
 import ReactPaginate from "react-paginate";
 import queryString from "query-string";
 import axios from "../../helpers/axios";
+import toDate from "../../utils/toDate";
 
 /**
  * @author
@@ -26,10 +27,11 @@ import axios from "../../helpers/axios";
  **/
 
 const ProductDetailsPage = (props) => {
+  const history = useHistory();
   const { socket } = props;
   const dispatch = useDispatch();
   const [brand, setBrand] = useState("");
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(5);
   const [hover, setHover] = useState(0);
   const [commentPage, setCommentPage] = useState(1);
   const [comment, setComment] = useState("");
@@ -54,7 +56,10 @@ const ProductDetailsPage = (props) => {
         const res = await axios.get(
           `products/getCommentPosition/10/${productId}/${commentId}`
         );
-        console.log(res.data);
+        const { page } = res.data.data;
+        if (page !== commentPage) {
+          setCommentPage(() => page);
+        }
         const element = document.getElementById(commentId);
         if (element) {
           setTimeout(() => {
@@ -67,7 +72,7 @@ const ProductDetailsPage = (props) => {
       };
       getCommentPosition();
     }
-  }, [commentId, comments, productId, products]);
+  }, [commentId, commentPage, comments, productId, products]);
 
   useEffect(() => {
     const params = {
@@ -132,7 +137,10 @@ const ProductDetailsPage = (props) => {
         productId,
         productName: product.productDetails.name,
       };
-      console.log(data);
+      if (commentPage !== 1) {
+        handleCommentPageChange(1);
+      }
+      setComment("");
       socket.emit("submit", data);
     } else {
       alert("please login");
@@ -143,6 +151,16 @@ const ProductDetailsPage = (props) => {
 
   const handleSubmitReply = (id) => {
     console.log({ id, reply });
+  };
+
+  const handleCommentPageChange = (activePage) => {
+    const { commentId } = queryString.parse(search);
+    if (commentId) {
+      history.replace({
+        search: "",
+      });
+    }
+    setCommentPage(() => +activePage.selected + 1);
   };
   return (
     <>
@@ -342,10 +360,7 @@ const ProductDetailsPage = (props) => {
                               />
                             ))}
                           </span>
-                          <span>
-                            {" "}
-                            at {new Date(c.createdAt).toLocaleString("vi-VN")}
-                          </span>
+                          <span> at {toDate(new Date(c.createdAt))}</span>
                         </p>
                         <p className="cmt__content">{c.comment}</p>
                         <p
@@ -392,9 +407,7 @@ const ProductDetailsPage = (props) => {
                       marginPagesDisplayed={2}
                       pageRangeDisplayed={5}
                       forcePage={Number(commentPage - 1) || 0}
-                      onPageChange={(activePage) =>
-                        setCommentPage(() => +activePage.selected + 1)
-                      }
+                      onPageChange={handleCommentPageChange}
                       containerClassName={"pagination"}
                       activeClassName={"active"}
                     />
