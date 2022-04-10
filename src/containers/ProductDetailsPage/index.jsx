@@ -95,9 +95,16 @@ const ProductDetailsPage = (props) => {
       const listener = (message) => {
         dispatch(getComments({ id: productId, page: 1 }));
       };
+      const listener2 = () => {
+        dispatch(getComments({ id: productId, page: commentPage + 1 }));
+      };
       socket.on("submit", listener);
+      socket.on("reply", listener2);
 
-      return () => socket.off("submit", listener);
+      return () => {
+        socket.off("submit", listener);
+        socket.off("reply", listener2);
+      };
     }
   }, [dispatch, productId, socket]);
   useEffect(() => {
@@ -155,7 +162,13 @@ const ProductDetailsPage = (props) => {
   };
 
   const handleSubmitReply = (id) => {
-    console.log({ id, reply });
+    if (auth.authenticate) {
+      const data = { commentId: id, content: reply, productId };
+      setReply("");
+      socket.emit("reply", data);
+    } else {
+      alert("please login");
+    }
   };
 
   const handleCommentPageChange = (activePage) => {
@@ -385,15 +398,16 @@ const ProductDetailsPage = (props) => {
                             ></Button>
                           </>
                         )}
-                        {c.replies.map((r, index) => (
-                          <div key={index} className="cmt--sub">
-                            <p className="cmt__username">{r.username}</p>
-                            <p className="cmt__stars-wrapper">
-                              <span>At 19/01/2022</span>
-                            </p>
-                            <p className="cmt__content">{r.comment}</p>
-                          </div>
-                        ))}
+                        {c.subComment?.length > 0 &&
+                          c.subComment.map((r, index) => (
+                            <div key={index} className="cmt--sub">
+                              <p className="cmt__username">{r.userName}</p>
+                              <p className="cmt__stars-wrapper">
+                                <span>At {toDate(new Date(r.createdAt))}</span>
+                              </p>
+                              <p className="cmt__content">{r.content}</p>
+                            </div>
+                          ))}
                       </div>
                     ))}
                   {comments?.length > 0 && (

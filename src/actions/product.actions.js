@@ -337,6 +337,7 @@ export const getComments = ({ id, page }) => {
           comment: i.comment.content,
           replies: i.comment.subComment,
           createdAt: i.comment.createdAt,
+          subComment: i.comment.subComment,
         })),
         totalPage: res.data.data.result.result.totalPage,
         page: res.data.data.result.result.currentPage,
