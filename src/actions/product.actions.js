@@ -62,7 +62,7 @@ export const getByQuery = (params, size = initParams.pageSize) => {
       });
       const result = {
         ...res.data.data,
-        products: res.data.data.items.map((product) => ({
+        products: res.data.data.result.items.map((product) => ({
           ...product,
           price: product.salePrice,
         })),
@@ -72,6 +72,7 @@ export const getByQuery = (params, size = initParams.pageSize) => {
         payload: result,
       });
     } catch (error) {
+      console.log(error);
       dispatch({
         type: productConstants.GET_PRODUCT_BY_QUERY_FAILURE,
         payload: { error: error.response.data.error },
@@ -106,8 +107,9 @@ export const getBySearch = (params, size = initParams.pageSize) => {
         params: { ...orderParams, salePrice: price, ...sort },
       });
       const result = {
-        ...res.data.data,
-        products: res.data.data.items.map((product) => ({
+        ...res.data.data.result,
+        metadata: res.data.data.metadata,
+        products: res.data.data.result.items.map((product) => ({
           ...product,
           price: product.salePrice,
         })),
@@ -117,6 +119,7 @@ export const getBySearch = (params, size = initParams.pageSize) => {
         payload: result,
       });
     } catch (error) {
+      console.log({ error });
       dispatch({
         type: productConstants.GET_PRODUCT_BY_QUERY_FAILURE,
         payload: { error: error.response.data.error },

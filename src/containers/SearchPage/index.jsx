@@ -26,9 +26,10 @@ const getBySearchSearchPage2 = async (params) => {
     const res = await axiosInstance.get(`products/search/${params.page}/${8}`, {
       params: { ...orderParams, ...sort },
     });
+    console.log(res);
     const result = {
       ...res.data.data,
-      products: res.data.data.products.map((product) => ({
+      products: res.data.data.result.items.map((product) => ({
         ...product,
         price: product.salePrice,
       })),

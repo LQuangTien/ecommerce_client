@@ -93,6 +93,7 @@ const ProductDetailsPage = (props) => {
   useEffect(() => {
     if (socket) {
       const listener = (message) => {
+        console.log("aaaaaaaaaa");
         dispatch(getComments({ id: productId, page: 1 }));
       };
       const listener2 = () => {
