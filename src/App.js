@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { isUserLoggedIn } from "./actions";
+import { isUserLoggedIn, getLabels } from "./actions";
 import { updateCart } from "./actions/cart.actions";
 import "./App.css";
 import Layout from "./components/Layout";
@@ -34,6 +34,7 @@ function App() {
 
   useEffect(() => {
     initiateSocketConnection();
+    dispatch(getLabels());
   }, []);
 
   useEffect(() => {

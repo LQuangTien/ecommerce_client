@@ -20,6 +20,7 @@ import ReactPaginate from "react-paginate";
 import queryString from "query-string";
 import axios from "../../helpers/axios";
 import toDate from "../../utils/toDate";
+import { authConstants } from "../../actions/constants";
 
 /**
  * @author
@@ -35,6 +36,7 @@ const ProductDetailsPage = (props) => {
   const [hover, setHover] = useState(0);
   const [commentPage, setCommentPage] = useState(1);
   const [comment, setComment] = useState("");
+  const [commentError, setCommentError] = useState("");
   const [showReply, setShowReply] = useState("");
   const [reply, setReply] = useState("");
   const product = useSelector((state) => state.products);
@@ -142,7 +144,7 @@ const ProductDetailsPage = (props) => {
     return items.length > 0;
   };
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = async () => {
     if (auth.authenticate) {
       const data = {
         rating,
@@ -150,13 +152,22 @@ const ProductDetailsPage = (props) => {
         productId,
         productName: product.productDetails.name,
       };
-      if (commentPage !== 1) {
-        handleCommentPageChange(1);
+      const isPositive = await isPositiveComment(comment);
+      if (isPositive) {
+        // setCommentError("");
+        // if (commentPage !== 1) {
+        //   handleCommentPageChange(1);
+        // }
+        setComment("");
+        setCommentError("");
+        // socket.emit("submit", data);
+      } else {
+        setCommentError("Please reconsider your comment");
       }
-      setComment("");
-      socket.emit("submit", data);
     } else {
-      alert("please login");
+      dispatch({
+        type: authConstants.SHOW_LOGIN_MODAL,
+      });
     }
 
     // dispatch(submitComment({ rating, comment }));
@@ -181,6 +192,36 @@ const ProductDetailsPage = (props) => {
     }
     setCommentPage(() => +activePage.selected + 1);
   };
+
+  async function textSentimentAnalysis(comment) {
+    const encodedParams = new URLSearchParams();
+    encodedParams.append("text", comment);
+
+    const options = {
+      method: "POST",
+      url: "https://text-sentiment.p.rapidapi.com/analyze",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "X-RapidAPI-Host": "text-sentiment.p.rapidapi.com",
+        "X-RapidAPI-Key": "ef38a2e0a2mshc7dc123112124a5p163e08jsn6ceae79072eb",
+      },
+      data: encodedParams,
+    };
+    try {
+      const response = await axios.request(options);
+      console.log({ res: response.data });
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async function isPositiveComment(comment) {
+    const resultAnalysisComment = await textSentimentAnalysis(comment);
+
+    if (parseFloat(resultAnalysisComment.pos) === 1) return true;
+    return false;
+  }
   return (
     <>
       <Banner slug={product.productDetails.category} />
@@ -347,6 +388,18 @@ const ProductDetailsPage = (props) => {
                     onChange={(e) => setComment(e.target.value)}
                     className="cmt__input"
                   ></textarea>
+                  {commentError !== "" && (
+                    <p
+                      style={{
+                        fontSize: "1.2rem",
+                        color: "red",
+                        paddingLeft: "0.2rem",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      {commentError}
+                    </p>
+                  )}
                   <Button
                     onClick={handleSubmitComment}
                     className="cmt__button"

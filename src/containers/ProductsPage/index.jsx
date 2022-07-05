@@ -30,10 +30,11 @@ function ProductPage(props) {
   const dispatch = useDispatch();
   const { category } = useParams();
   const search = useLocation().search;
-  const { page, from, to, orderBy, ...otherSearchParam } =
+  const { page, from, to, orderBy, labels, ...otherSearchParam } =
     queryString.parse(search);
   const categoryState = useSelector((state) => state.categories);
   const { products, totalPage } = useSelector((state) => state.products);
+  const labelState = useSelector((state) => state.labels);
   /** Use State */
   const [query, setQuery] = useState(() => {
     const paramFromURL = { ...otherSearchParam };
@@ -47,6 +48,7 @@ function ProductPage(props) {
     to,
     orderBy,
     page,
+    labels,
     ...otherSearchParam,
   }));
   const [price, setPrices] = useState([from || 0, to || 0]);
@@ -106,6 +108,9 @@ function ProductPage(props) {
         cloneSearch[key] = cloneSearch[key].join(",");
       }
     });
+    if (cloneSearch.labels) {
+      cloneSearch.labels = cloneSearch.labels.join(",");
+    }
     return cloneSearch;
   };
   const updateQueryString = (newQuery) => {
@@ -309,6 +314,115 @@ function ProductPage(props) {
       });
     }
   };
+
+  const renderLabels = () => {
+    if (labelState.labels.length > 0) {
+      return (
+        <div className="filter__field">
+          <p className="filter__heading">Labels</p>
+          {labelState.labels.map((field) => {
+            const hasField = !!Object.keys(query).find(
+              (key) => key === "labels"
+            );
+            return (
+              <>
+                <label
+                  className={`filter__checkbox-label ${
+                    (() => isChecked("labels", field.name))()
+                      ? "filter__checkbox-label--active"
+                      : ""
+                  }  `}
+                  style={
+                    (() => isChecked("labels", field.name))()
+                      ? {
+                          color: "white",
+                          borderColor: field.color,
+                          backgroundColor: field.color,
+                        }
+                      : {
+                          color: field.color,
+                          borderColor: field.color,
+                        }
+                  }
+                  key={field.name}
+                >
+                  <input
+                    className="filter__checkbox"
+                    type="checkbox"
+                    name={field.name}
+                    onChange={() => {
+                      let newQuery = { page: 1 };
+                      console.log({ query });
+
+                      // kiểm tra field name có trong query chưa
+                      // nếu chưa thì tạo thêm property với giá trị là một mảng, có phần tử đầu tiên là value
+                      if (!hasField) {
+                        newQuery = { ...newQuery, labels: [field.name] };
+                        setQuery((prev) => ({
+                          ...prev,
+                          ...newQuery,
+                        }));
+                        updateQueryString(newQuery);
+                        return;
+                      }
+                      // nếu rồi thì
+                      // kiếm trả giá trị có trong mảng của field chưa
+                      const indexValue = query.labels.findIndex(
+                        (val) => val === field.name
+                      );
+                      // nếu chưa thì thêm
+                      if (indexValue < 0) {
+                        newQuery = {
+                          ...newQuery,
+                          labels: [...query.labels, field.name],
+                        };
+                        setQuery((prev) => {
+                          return {
+                            ...prev,
+                            ...newQuery,
+                          };
+                        });
+                        updateQueryString(newQuery);
+                        return;
+                      }
+                      // nếu có thì xóa
+                      newQuery = { ...query, ...newQuery };
+                      const filter = newQuery.labels.filter(
+                        (val) => val !== field.name
+                      );
+                      newQuery = {
+                        ...newQuery,
+                        labels: filter,
+                      };
+
+                      setQuery((prev) => {
+                        const filter = prev.labels.filter(
+                          (val) => val !== field.name
+                        );
+                        return { ...prev, labels: filter };
+                      });
+
+                      // kiem tra nếu giá trị là rỗng thì xóa luôn cái property đó
+                      if (query.labels.length === 0) {
+                        delete newQuery.labels;
+                        setQuery((prev) => {
+                          delete query.labels;
+                          return { ...prev };
+                        });
+                      }
+
+                      updateQueryString(newQuery);
+                    }}
+                  />
+                  {field.name}
+                </label>
+              </>
+            );
+          })}
+        </div>
+      );
+    }
+  };
   /** Render */
 
   return (
@@ -324,6 +438,7 @@ function ProductPage(props) {
                   {renderPriceRanger()}
                 </div>
                 {renderDynamicFilterField()}
+                {renderLabels()}
                 <button className="filter__clear" onClick={resetFilter}>
                   X Clear
                 </button>

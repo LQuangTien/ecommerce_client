@@ -14,6 +14,7 @@ const initState = {
   forgotPasswordError: null,
   isChangePassword: false,
   changePasswordError: null,
+  showLoginModal: false,
 };
 const authReducer = (state = initState, action) => {
   switch (action.type) {
@@ -140,6 +141,18 @@ const authReducer = (state = initState, action) => {
         ...state,
         isChangePassword: false,
         changePasswordError: action.payload.error,
+      };
+      break;
+    case authConstants.SHOW_LOGIN_MODAL:
+      state = {
+        ...state,
+        showLoginModal: true,
+      };
+      break;
+    case authConstants.CLOSE_LOGIN_MODAL:
+      state = {
+        ...state,
+        showLoginModal: false,
       };
       break;
     default:

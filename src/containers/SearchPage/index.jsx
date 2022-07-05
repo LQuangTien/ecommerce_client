@@ -58,7 +58,7 @@ function SearchPage(props) {
   const history = useHistory();
   const dispatch = useDispatch();
   const search = useLocation().search;
-  const { q, page, from, to, orderBy, ...otherSearchParam } =
+  const { q, page, from, to, orderBy, labels, ...otherSearchParam } =
     queryString.parse(search);
   const [metadata, setMetadata] = useState(null);
   const [loadMetadata, setLoadMetadata] = useState(true);
@@ -67,6 +67,7 @@ function SearchPage(props) {
   const [brands, setBrands] = useState([]);
   const [shouldChangeFilter, setShouldChangeFilter] = useState(true);
   const [price, setPrices] = useState([from || 0, to || 0]);
+  const labelState = useSelector((state) => state.labels);
   /** Use State */
   const [order, setOrder] = useState(orderBy || ORDER_OPTIONS[0].value);
   const { getTrackProps, segments, handles } = useRanger({
@@ -78,17 +79,10 @@ function SearchPage(props) {
       setPrices(values);
       const newQuery = fulfillQuery({ from: values[0], to: values[1] });
       setQuery((prev) => ({ ...prev, ...newQuery }));
-      updateQueryString(newQuery);
+      updateQueryString({ ...query, ...newQuery });
     },
   });
 
-  const [query, setQuery] = useState(() => {
-    const paramFromURL = { ...otherSearchParam };
-    Object.keys(paramFromURL).forEach((key) => {
-      paramFromURL[key] = paramFromURL[key].split(",");
-    });
-    return { q, from, to, page, orderBy, ...paramFromURL };
-  });
   const [searchParam, setSearchParam] = useState(() => ({
     q,
     from,
@@ -97,11 +91,21 @@ function SearchPage(props) {
     page,
     ...otherSearchParam,
   }));
+
+  const [query, setQuery] = useState(() => {
+    const paramFromURL = { ...otherSearchParam };
+    Object.keys(paramFromURL).forEach((key) => {
+      paramFromURL[key] = paramFromURL[key].split(",");
+    });
+    return { q, from, to, page, orderBy, ...paramFromURL };
+  });
+
   const updateQueryString = useCallback((newQuery) => {
     const search = {
       ...query,
       ...newQuery,
     };
+    console.log({ search });
     const searchParam = formatToSearchParam(search);
     setSearchParam(searchParam);
     const searchString = queryString.stringify(searchParam);
@@ -193,9 +197,9 @@ function SearchPage(props) {
 
   const resetFilter = () => {
     setPrices(INIT_PRICE_STATE);
-    setQuery({});
-    setSearchParam({});
-    const searchString = queryString.stringify({});
+    setQuery({ q: query.q, page: 1 });
+    setSearchParam({ q: query.q, page: 1 });
+    const searchString = queryString.stringify({ q: query.q, page: 1 });
     history.push({
       search: searchString,
     });
@@ -506,6 +510,117 @@ function SearchPage(props) {
     </div>
   );
 
+  const renderLabels = () => {
+    if (labelState.labels.length > 0) {
+      return (
+        <div className="filter__field">
+          <p className="filter__heading">Labels</p>
+          {labelState.labels.map((field) => {
+            const hasField = !!Object.keys(query).find(
+              (key) => key === "labels"
+            );
+            return (
+              <>
+                <label
+                  className={`filter__checkbox-label ${
+                    (() => isChecked("labels", field.name))()
+                      ? "filter__checkbox-label--active"
+                      : ""
+                  }  `}
+                  style={
+                    (() => isChecked("labels", field.name))()
+                      ? {
+                          color: "white",
+                          borderColor: field.color,
+                          backgroundColor: field.color,
+                        }
+                      : {
+                          color: field.color,
+                          borderColor: field.color,
+                        }
+                  }
+                  key={field.name}
+                >
+                  <input
+                    className="filter__checkbox"
+                    type="checkbox"
+                    name={field.name}
+                    onChange={() => {
+                      let newQuery = { page: 1 };
+
+                      // kiểm tra field name có trong query chưa
+                      // nếu chưa thì tạo thêm property với giá trị là một mảng, có phần tử đầu tiên là value
+                      if (!hasField) {
+                        newQuery = { ...newQuery, labels: [field.name] };
+                        setQuery((prev) => ({
+                          ...prev,
+                          ...newQuery,
+                        }));
+                        updateQueryString(newQuery);
+                        return;
+                      }
+                      // nếu rồi thì
+                      // kiếm trả giá trị có trong mảng của field chưa
+                      const indexValue = query.labels.findIndex(
+                        (val) => val === field.name
+                      );
+                      // nếu chưa thì thêm
+                      if (indexValue < 0) {
+                        newQuery = {
+                          ...newQuery,
+                          labels: [...query.labels, field.name],
+                        };
+                        setQuery((prev) => {
+                          return {
+                            ...prev,
+                            ...newQuery,
+                          };
+                        });
+                        updateQueryString({
+                          ...query,
+                          ...newQuery,
+                        });
+                        return;
+                      }
+                      // nếu có thì xóa
+                      newQuery = { ...query, ...newQuery };
+                      const filter = newQuery.labels.filter(
+                        (val) => val !== field.name
+                      );
+                      newQuery = {
+                        ...newQuery,
+                        labels: filter,
+                      };
+                      console.log({ newQuery });
+                      setQuery((prev) => {
+                        const filter = prev.labels.filter(
+                          (val) => val !== field.name
+                        );
+                        return { ...prev, labels: filter };
+                      });
+
+                      // kiem tra nếu giá trị là rỗng thì xóa luôn cái property đó
+                      if (query.labels.length === 0) {
+                        delete newQuery.labels;
+                        setQuery((prev) => {
+                          delete query.labels;
+                          return { ...prev };
+                        });
+                      }
+
+                      updateQueryString(newQuery);
+                    }}
+                  />
+                  {field.name}
+                </label>
+              </>
+            );
+          })}
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="product">
       <div className="grid wide">
@@ -517,6 +632,10 @@ function SearchPage(props) {
             </div>
             <div>{renderCategoryFilterField()}</div>
             <div>{renderBrandFilterField()}</div>
+            <div>{renderLabels()}</div>
+            <button className="filter__clear" onClick={resetFilter}>
+              X Clear
+            </button>
           </div>
           <div className="col lg-9 md-12">
             {products.length > 0 && (

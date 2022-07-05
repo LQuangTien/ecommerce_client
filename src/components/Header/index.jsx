@@ -8,6 +8,7 @@ import {
   forgotPassword,
   getAllCategory,
   getCart,
+  googleSignin,
   login,
   signout,
   signup,
@@ -20,6 +21,8 @@ import Modal from "../UI/Modal";
 import "./style.css";
 import { googleApi } from "../../urlConfig";
 import FacebookLogin from "react-facebook-login";
+import { authConstants } from "../../actions/constants";
+
 const Header = (props) => {
   const [signinModal, setSigninModal] = useState(false);
   const [signupModal, setSignupModal] = useState(false);
@@ -50,6 +53,12 @@ const Header = (props) => {
       resetForm();
     }
   }, [auth.authenticate, dispatch]);
+  useEffect(() => {
+    if (auth.showLoginModal) {
+      setSigninModal(true);
+      resetForm();
+    }
+  }, [auth.showLoginModal]);
   const handleLogin = () => {
     dispatch(login({ email, password }));
   };
@@ -90,7 +99,13 @@ const Header = (props) => {
     }
   };
   const responseGoogle = (response) => {
-    console.log(response);
+    dispatch(
+      googleSignin({
+        email: response.profileObj.email,
+        firstName: response.profileObj.familyName,
+        lastName: response.profileObj.givenName,
+      })
+    );
   };
   const responseFacebook = (response) => {
     console.log(response);
@@ -171,14 +186,8 @@ const Header = (props) => {
               onFailure={responseGoogle}
               cookiePolicy={"single_host_origin"}
               className="google-button mt-16"
+              pluginName="streamy"
             />
-            {/* <FacebookLogin
-              // appId="1272565219898979"
-              appId="5169654406399994"
-              autoLoad={true}
-              fields="name,email,picture"
-              callback={responseFacebook}
-            /> */}
             <p className="socials__label mt-16">Hope you have fun with us</p>
             <div className="mt-12">
               <div className="logo">
@@ -461,6 +470,9 @@ const Header = (props) => {
     setForgotPasswordModal(false);
     setChangePaswordModal(false);
     resetForm();
+    dispatch({
+      type: authConstants.CLOSE_LOGIN_MODAL,
+    });
   };
   const getItemQuantity = () => {
     let sum = 0;
