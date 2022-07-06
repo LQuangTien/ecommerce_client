@@ -27,6 +27,7 @@ const productReducer = (state = initState, action) => {
     case productConstants.GET_PRODUCT_BY_QUERY_REQUEST:
       state = {
         ...state,
+        products: [],
         loading: true,
       };
       break;

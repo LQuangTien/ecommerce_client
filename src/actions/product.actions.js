@@ -62,6 +62,7 @@ export const getByQuery = (params, size = initParams.pageSize) => {
       });
       const result = {
         ...res.data.data,
+        ...res.data.data.result,
         products: res.data.data.result.items.map((product) => ({
           ...product,
           price: product.salePrice,

@@ -9,6 +9,7 @@ import Banner from "../../components/UI/Banner";
 import { generatePictureUrl } from "../../urlConfig";
 import formatThousand from "../../utils/formatThousand";
 import { isNew } from "../../utils/isNew";
+import ReactLoading from "react-loading";
 import "./style.css";
 const INIT_PRICE_STATE = [0, 0];
 const ORDER_OPTIONS = [
@@ -33,7 +34,9 @@ function ProductPage(props) {
   const { page, from, to, orderBy, labels, ...otherSearchParam } =
     queryString.parse(search);
   const categoryState = useSelector((state) => state.categories);
-  const { products, totalPage } = useSelector((state) => state.products);
+  const { products, totalPage, loading } = useSelector(
+    (state) => state.products
+  );
   const labelState = useSelector((state) => state.labels);
   /** Use State */
   const [query, setQuery] = useState(() => {
@@ -525,6 +528,7 @@ function ProductPage(props) {
                       </div>
                     ))}
                   </div>
+                  {console.log(totalPage)}
                   <div className="row">
                     <ReactPaginate
                       previousLabel={"<"}
@@ -542,7 +546,7 @@ function ProductPage(props) {
                   </div>
                 </>
               )}
-              {products.length <= 0 && (
+              {products.length <= 0 && !loading && (
                 <>
                   <p className="not-found-title">
                     We couldn't find the product you're looking for
@@ -557,6 +561,25 @@ function ProductPage(props) {
                       src="https://res.cloudinary.com/quangtien/image/upload/v1634491963/ccef151a3e6dfc9c07e7e195daa3fe25_v6spgl.png"
                       alt=""
                       className="not-found__image"
+                    />
+                  </div>
+                </>
+              )}
+
+              {products.length <= 0 && loading && (
+                <>
+                  <div
+                    style={{
+                      margin: "200px auto auto",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <ReactLoading
+                      type={"spin"}
+                      color={"#1467c1"}
+                      height={"10%"}
+                      width={"10%"}
                     />
                   </div>
                 </>
