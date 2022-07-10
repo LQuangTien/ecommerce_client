@@ -39,6 +39,8 @@ const ProductDetailsPage = (props) => {
   const [commentError, setCommentError] = useState("");
   const [showReply, setShowReply] = useState("");
   const [reply, setReply] = useState("");
+  const [canComment, setCanComment] = useState(true);
+  const [yourComment, setYourComment] = useState(null);
   const product = useSelector((state) => state.products);
   const auth = useSelector((state) => state.auth);
 
@@ -56,6 +58,23 @@ const ProductDetailsPage = (props) => {
     totalComment,
   } = useSelector((state) => state.products);
   const { productId } = useParams();
+
+  useEffect(() => {
+    if (auth.authenticate) {
+      const checkCanComment = async () => {
+        const response = await axios.get(
+          `/product/checkUserCanComment/${productId}`
+        );
+        if (response.data.data.canComment === false) {
+          setCanComment(false);
+          setYourComment(response.data.data.comment);
+        }
+        return response;
+      };
+
+      checkCanComment();
+    }
+  }, [auth.authenticate, productId]);
 
   useEffect(() => {
     if (commentId && comments && products && productId) {
@@ -95,11 +114,10 @@ const ProductDetailsPage = (props) => {
   useEffect(() => {
     if (socket) {
       const listener = (message) => {
-        console.log("aaaaaaaaaa");
         dispatch(getComments({ id: productId, page: 1 }));
       };
       const listener2 = () => {
-        dispatch(getComments({ id: productId, page: commentPage + 1 }));
+        dispatch(getComments({ id: productId, page: commentPage }));
       };
       socket.on("submit", listener);
       socket.on("reply", listener2);
@@ -154,13 +172,13 @@ const ProductDetailsPage = (props) => {
       };
       const isPositive = await isPositiveComment(comment);
       if (isPositive) {
-        // setCommentError("");
-        // if (commentPage !== 1) {
-        //   handleCommentPageChange(1);
-        // }
+        if (commentPage !== 1) {
+          handleCommentPageChange(1);
+        }
         setComment("");
         setCommentError("");
-        // socket.emit("submit", data);
+        setCanComment(false);
+        socket.emit("submit", data);
       } else {
         setCommentError("Please reconsider your comment");
       }
@@ -177,9 +195,12 @@ const ProductDetailsPage = (props) => {
     if (auth.authenticate) {
       const data = { commentId: id, content: reply, productId };
       setReply("");
+      setShowReply(null);
       socket.emit("reply", data);
     } else {
-      alert("please login");
+      dispatch({
+        type: authConstants.SHOW_LOGIN_MODAL,
+      });
     }
   };
 
@@ -356,62 +377,110 @@ const ProductDetailsPage = (props) => {
                   ))}
                 </div>
               </div>
-              <div className="row">
-                <div className="col sm-4 give-rating-wrapper">
-                  <p className="give-rating-title">
-                    How many stars do you rate this product?
-                  </p>
-                  <div className="give-rating-star">
-                    {[...Array(5)].map((star, index) => {
-                      index += 1;
-                      return (
-                        <IoStar
-                          key={index}
-                          className={
-                            index <= (hover || rating)
-                              ? "comment__star"
-                              : "comment__star--gray"
-                          }
-                          onClick={() => setRating(index)}
-                          onMouseEnter={() => setHover(index)}
-                          onMouseLeave={() => setHover(rating)}
-                        />
-                      );
-                    })}
+
+              {!canComment ? (
+                <>
+                  {yourComment ? (
+                    <>
+                      <div class="your-comment">Your comment: </div>
+                      <div className="cmt cmt__your-comment">
+                        <p className="cmt__username">
+                          {yourComment.comment[0].userName}
+                        </p>
+                        <p className="cmt__stars-wrapper">
+                          <span className="cmt__stars">
+                            {[...Array(5)].map((star, index) => (
+                              <IoStar
+                                key={index}
+                                className={
+                                  yourComment.comment[0].rating >= index + 1
+                                    ? ""
+                                    : "comment__star--gray"
+                                }
+                              />
+                            ))}
+                          </span>
+                          <span>
+                            {" "}
+                            at{" "}
+                            {toDate(new Date(yourComment.comment[0].createdAt))}
+                          </span>
+                        </p>
+                        <p className="cmt__content">
+                          {yourComment.comment[0].content}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ) : (
+                <div className="row">
+                  <div className="col sm-4 give-rating-wrapper">
+                    <p className="give-rating-title">
+                      How many stars do you rate this product?
+                    </p>
+                    <div className="give-rating-star">
+                      {[...Array(5)].map((star, index) => {
+                        index += 1;
+                        return (
+                          <IoStar
+                            key={index}
+                            className={
+                              index <= (hover || rating)
+                                ? "comment__star"
+                                : "comment__star--gray"
+                            }
+                            onClick={() => setRating(index)}
+                            onMouseEnter={() => setHover(index)}
+                            onMouseLeave={() => setHover(rating)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="col sm-8">
+                    <p className="cmt__heading">Leave your comment here</p>
+
+                    <textarea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      className="cmt__input"
+                    ></textarea>
+                    {commentError !== "" && (
+                      <p
+                        style={{
+                          fontSize: "1.2rem",
+                          color: "red",
+                          paddingLeft: "0.2rem",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        {commentError}
+                      </p>
+                    )}
+                    <Button
+                      onClick={handleSubmitComment}
+                      className="cmt__button"
+                      title={"Submit"}
+                    ></Button>
                   </div>
                 </div>
-                <div className="col sm-8">
-                  <p className="cmt__heading">Leave your comment here</p>
-
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="cmt__input"
-                  ></textarea>
-                  {commentError !== "" && (
-                    <p
-                      style={{
-                        fontSize: "1.2rem",
-                        color: "red",
-                        paddingLeft: "0.2rem",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      {commentError}
-                    </p>
-                  )}
-                  <Button
-                    onClick={handleSubmitComment}
-                    className="cmt__button"
-                    title={"Submit"}
-                  ></Button>
-                </div>
-              </div>
-              <div className="row">
+              )}
+              <div className=" mt-12 row">
                 <div className="col sm-12">
                   {comments?.length > 0 &&
                     comments.map((c, index) => (
-                      <div id={c.id} key={c.id} className="cmt">
+                      <div
+                        id={c.id}
+                        key={c.id}
+                        className={`cmt ${
+                          index + 1 === comments.length
+                            ? "cmt__your-comment"
+                            : ""
+                        }`}
+                      >
                         <p className="cmt__username">{c.username}</p>
                         <p className="cmt__stars-wrapper">
                           <span className="cmt__stars">
@@ -464,21 +533,23 @@ const ProductDetailsPage = (props) => {
                           ))}
                       </div>
                     ))}
-                  {comments?.length > 0 && (
-                    <ReactPaginate
-                      previousLabel={"<"}
-                      nextLabel={">"}
-                      breakLabel={"..."}
-                      breakClassName={"break-me"}
-                      pageCount={totalCommentPage}
-                      marginPagesDisplayed={2}
-                      pageRangeDisplayed={5}
-                      forcePage={Number(commentPage - 1) || 0}
-                      onPageChange={handleCommentPageChange}
-                      containerClassName={"pagination"}
-                      activeClassName={"active"}
-                    />
-                  )}
+                  <div className="mt-12">
+                    {comments?.length > 0 && (
+                      <ReactPaginate
+                        previousLabel={"<"}
+                        nextLabel={">"}
+                        breakLabel={"..."}
+                        breakClassName={"break-me"}
+                        pageCount={totalCommentPage}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        forcePage={Number(commentPage - 1) || 0}
+                        onPageChange={handleCommentPageChange}
+                        containerClassName={"pagination"}
+                        activeClassName={"active"}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

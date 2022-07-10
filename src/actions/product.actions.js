@@ -346,18 +346,41 @@ export const getComments = ({ id, page }) => {
         totalPage: res.data.data.result.result.totalPage,
         page: res.data.data.result.result.currentPage,
       };
-      const ratingsSort = res.data.data.total.sort((a, b) => b._id - a._id);
+      let totalData = [
+        { _id: 1, count: 0 },
+        { _id: 4, count: 0 },
+        { _id: 3, count: 0 },
+        { _id: 5, count: 0 },
+        { _id: 2, count: 0 },
+      ];
+      if (res.data.data.total.length) {
+        res.data.data.total.forEach((r) => {
+          totalData.find((t) => t._id === r._id).count = r.count;
+        });
+      }
+      const ratingsSort = totalData.sort((a, b) => b._id - a._id);
+      console.log({ ratingsSort });
+
       const sum = (arr) => arr.reduce((p, c) => p + c, 0);
+
       const totalCount = sum(ratingsSort.map((r) => r.count));
+      console.log({ totalCount });
       const ratings = ratingsSort.map((r) => ({
         ...r,
         star: r._id,
-        percent: Number(((r.count / totalCount) * 100).toFixed(0)),
+        percent:
+          Number(r.count) === 0 && Number(totalCount) === 0
+            ? 0
+            : Number(((r.count / totalCount) * 100).toFixed(0)),
       }));
-      ratings[ratings.length - 1].percent =
-        100 - sum(ratings.slice(0, -1).map((x) => x.percent));
-      const average = (arr) => Math.round(totalCount / arr.length);
-      const avg = average(ratings.map((r) => r.count));
+      if (Number(totalCount) !== 0) {
+        ratings[ratings.length - 1].percent =
+          100 - sum(ratings.slice(0, -1).map((x) => x.percent));
+      }
+
+      const average = (arr) =>
+        Math.round(arr.reduce((a, b) => a + b) / totalCount);
+      const avg = average(ratings.map((r) => r.count * r._id)) || 0;
       const avgRating = avg > 5 ? 5 : avg;
 
       dispatch({
@@ -372,9 +395,10 @@ export const getComments = ({ id, page }) => {
         },
       });
     } catch (error) {
+      console.log({ error });
       dispatch({
         type: productConstants.GET_COMMENTS_FAILURE,
-        payload: { error: error.response.data.error },
+        payload: { error: "error" },
       });
     }
   };

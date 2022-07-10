@@ -191,6 +191,14 @@
 .cmt:not(:last-child) {
   border-bottom: none;
 }
+.cmt__your-comment {
+  border-bottom: 1px solid #eee !important;
+}
+
+.your-comment {
+  font-size: 2rem;
+  font-weight: bold;
+}
 .cmt__username {
   font-size: 1.8rem;
   font-weight: 500;
