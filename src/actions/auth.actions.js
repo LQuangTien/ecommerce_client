@@ -83,10 +83,9 @@ export const forgotPassword = (data) => {
         type: authConstants.FORGOT_PASSWORD_SUCCESS,
       });
     } catch (error) {
-      console.log(error.response.data.error.error);
       dispatch({
         type: authConstants.FORGOT_PASSWORD_FAILURE,
-        payload: { error: error.response.data.error.error },
+        payload: { error: error.response.data.error },
       });
     }
   };

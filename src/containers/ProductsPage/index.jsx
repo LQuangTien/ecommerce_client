@@ -483,11 +483,25 @@ function ProductPage(props) {
                                   SALE {products[key].sale}%
                                 </span>
                               )}
-                              {isNew(products[key].createdAt) && (
-                                <span className="product__badge-item product__badge-item--new">
-                                  NEW
-                                </span>
-                              )}
+                              {products[key].labels &&
+                                products[key].labels.length > 0 &&
+                                products[key].labels.slice(0, 3).map((l) => {
+                                  const lab = labelState.labels.find(
+                                    (la) => la.name === l
+                                  );
+                                  if (lab) {
+                                    return (
+                                      <span
+                                        className="product__badge-item"
+                                        style={{ color: lab.color }}
+                                      >
+                                        {l}
+                                      </span>
+                                    );
+                                  } else {
+                                    return <></>;
+                                  }
+                                })}
                             </div>
                             <div className="product__image">
                               <img

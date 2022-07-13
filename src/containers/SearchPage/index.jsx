@@ -9,6 +9,7 @@ import axiosInstance from "../../helpers/axios";
 import { generatePictureUrl } from "../../urlConfig";
 import formatThousand from "../../utils/formatThousand";
 import { isNew } from "../../utils/isNew";
+import ReactLoading from "react-loading";
 import "./style.css";
 const getBySearchSearchPage2 = async (params) => {
   const sort = params.orderBy
@@ -62,7 +63,9 @@ function SearchPage(props) {
     queryString.parse(search);
   const [metadata, setMetadata] = useState(null);
   const [loadMetadata, setLoadMetadata] = useState(true);
-  const { products, totalPage } = useSelector((state) => state.products);
+  const { products, totalPage, loading } = useSelector(
+    (state) => state.products
+  );
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [shouldChangeFilter, setShouldChangeFilter] = useState(true);
@@ -105,7 +108,6 @@ function SearchPage(props) {
       ...query,
       ...newQuery,
     };
-    console.log({ search });
     const searchParam = formatToSearchParam(search);
     setSearchParam(searchParam);
     const searchString = queryString.stringify(searchParam);
@@ -546,7 +548,7 @@ function SearchPage(props) {
                     type="checkbox"
                     name={field.name}
                     onChange={() => {
-                      let newQuery = { page: 1 };
+                      let newQuery = { page: 1, q };
 
                       // kiểm tra field name có trong query chưa
                       // nếu chưa thì tạo thêm property với giá trị là một mảng, có phần tử đầu tiên là value
@@ -672,11 +674,25 @@ function SearchPage(props) {
                               SALE {products[key].sale}%
                             </span>
                           )}
-                          {isNew(products[key].createdAt) && (
-                            <span className="product__badge-item product__badge-item--new">
-                              NEW
-                            </span>
-                          )}
+                          {products[key].labels &&
+                            products[key].labels.length > 0 &&
+                            products[key].labels.slice(0, 3).map((l) => {
+                              const lab = labelState.labels.find(
+                                (la) => la.name === l
+                              );
+                              if (lab) {
+                                return (
+                                  <span
+                                    className="product__badge-item"
+                                    style={{ color: lab.color }}
+                                  >
+                                    {l}
+                                  </span>
+                                );
+                              } else {
+                                return <></>;
+                              }
+                            })}
                         </div>
                         <div className="product__image">
                           <img
@@ -720,7 +736,7 @@ function SearchPage(props) {
                 </div>
               </>
             )}
-            {products.length <= 0 && (
+            {products.length <= 0 && !loading && (
               <>
                 <p className="not-found-title">
                   We couldn't find the product you're looking for
@@ -735,6 +751,24 @@ function SearchPage(props) {
                     src="https://res.cloudinary.com/quangtien/image/upload/v1634491963/ccef151a3e6dfc9c07e7e195daa3fe25_v6spgl.png"
                     alt=""
                     className="not-found__image"
+                  />
+                </div>
+              </>
+            )}
+            {products.length <= 0 && loading && (
+              <>
+                <div
+                  style={{
+                    margin: "200px auto auto",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <ReactLoading
+                    type={"spin"}
+                    color={"#1467c1"}
+                    height={"10%"}
+                    width={"10%"}
                   />
                 </div>
               </>
