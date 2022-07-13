@@ -10,11 +10,15 @@ const initState = {
   message: "",
   signuping: false,
   signupError: "",
+  signUpSuccessMessage: null,
   isForgotPassword: false,
   forgotPasswordError: null,
   isChangePassword: false,
   changePasswordError: null,
   showLoginModal: false,
+  isActiving: false,
+  activeSuccessMessage: null,
+  activeErrorMessage: null,
 };
 const authReducer = (state = initState, action) => {
   switch (action.type) {
@@ -45,15 +49,19 @@ const authReducer = (state = initState, action) => {
       state = {
         ...state,
         signuping: true,
+        signupError: null,
+        signUpSuccessMessage: null,
       };
       break;
     case authConstants.SIGNUP_SUCCESS:
       state = {
         ...state,
-        user: action.payload.user,
-        token: action.payload.token,
-        authenticate: true,
+        signUpSuccessMessage: action.payload.signUpSuccessMessage,
+        // user: action.payload.user,
+        // token: action.payload.token,
+        // authenticate: true,
         signuping: false,
+        signupError: null,
       };
       break;
     case authConstants.SIGNUP_FAILURE:
@@ -153,6 +161,30 @@ const authReducer = (state = initState, action) => {
       state = {
         ...state,
         showLoginModal: false,
+      };
+      break;
+    case authConstants.ACTIVE_ACCOUNT_REQUEST:
+      state = {
+        ...state,
+        isActiving: true,
+        activeSuccessMessage: null,
+        activeErrorMessage: null,
+      };
+      break;
+    case authConstants.ACTIVE_ACCOUNT_SUCCESS:
+      state = {
+        ...state,
+        isActiving: false,
+        activeSuccessMessage: action.payload.activeSuccessMessage,
+        activeErrorMessage: null,
+      };
+      break;
+    case authConstants.ACTIVE_ACCOUNT_FAILURE:
+      state = {
+        ...state,
+        isActiving: false,
+        activeSuccessMessage: null,
+        activeErrorMessage: action.payload.activeErrorMessage,
       };
       break;
     default:

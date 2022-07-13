@@ -40,7 +40,6 @@ const Header = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const categoryState = useSelector((state) => state.categories);
-  const authState = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
   useEffect(() => {
     dispatch(getAllCategory());
@@ -63,10 +62,6 @@ const Header = (props) => {
     dispatch(login({ email, password }));
   };
   const handleSignUp = () => {
-    // if (password !== confirmPassword) {
-    //   setError("Password not match");
-    //   return;
-    // }
     dispatch(signup({ email, password, firstName, lastName, confirmPassword }));
   };
   const handleForgotPassword = () => {
@@ -78,12 +73,10 @@ const Header = (props) => {
       setError("Password not match");
       return;
     }
-    dispatch(changePassword({ email: authState.user.email, password })).then(
-      () => {
-        setChangePaswordModal(false);
-        resetForm();
-      }
-    );
+    dispatch(changePassword({ email: auth.user.email, password })).then(() => {
+      setChangePaswordModal(false);
+      resetForm();
+    });
   };
 
   const handleLogout = (e) => {
@@ -106,9 +99,6 @@ const Header = (props) => {
         lastName: response.profileObj.givenName,
       })
     );
-  };
-  const responseFacebook = (response) => {
-    console.log(response);
   };
   const renderSigninModal = () => {
     return (
@@ -199,6 +189,48 @@ const Header = (props) => {
       </Modal>
     );
   };
+  const renderError = () => {
+    if (error !== "") {
+      return (
+        <p
+          style={{
+            fontSize: "1.2rem",
+            color: "red",
+            paddingLeft: "0.2rem",
+          }}
+        >
+          {error}
+        </p>
+      );
+    }
+    if (auth.signupError) {
+      return (
+        <p
+          style={{
+            fontSize: "1.2rem",
+            color: "red",
+            paddingLeft: "0.2rem",
+          }}
+        >
+          {auth.signupError}
+        </p>
+      );
+    }
+    if (auth.signUpSuccessMessage) {
+      return (
+        <p
+          style={{
+            fontSize: "2rem",
+            color: "green",
+            paddingLeft: "0.2rem",
+            textAlign: "center",
+          }}
+        >
+          {auth.signUpSuccessMessage}
+        </p>
+      );
+    }
+  };
   const renderSignupModal = () => {
     return (
       <Modal
@@ -210,84 +242,67 @@ const Header = (props) => {
         title="Sign up"
       >
         <div className="row">
-          <div className="col sm-12 md-12 lg-12">
-            {error !== "" && (
-              <p
-                style={{
-                  fontSize: "1.2rem",
-                  color: "red",
-                  paddingLeft: "0.2rem",
-                }}
-              >
-                {error}
-              </p>
-            )}
-            {auth.signupError && (
-              <p
-                style={{
-                  fontSize: "1.2rem",
-                  color: "red",
-                  paddingLeft: "0.2rem",
-                }}
-              >
-                {auth.signupError}
-              </p>
-            )}
-          </div>
-          <div className="col sm-12 md-12 lg-12">
-            <Input
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </div>
-          <div className="col sm-12 md-12 lg-12 mt-16">
-            <Input
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </div>
-          <div className="col sm-12 md-12 lg-12 mt-16">
-            <Input
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="col sm-12 md-12 lg-12 mt-16">
-            <Input
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="col sm-12 md-12 lg-12 mt-16">
-            <Input
-              placeholder="Confirm password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-          <div className="col sm-12 md-12 lg-12 mt-16 ">
-            <Button
-              title="SIGN UP"
-              onClick={handleSignUp}
-              loading={auth.signuping}
-            />
-          </div>
-          <div className="col sm-12 md-12 lg-12 mt-16">
-            <Anchor
-              title="Already have an account? Login instead here"
-              onClick={() => {
-                resetForm();
-                closeModals();
-                setSigninModal(true);
-              }}
-            />
-          </div>
+          <div className="col sm-12 md-12 lg-12">{renderError()}</div>
+          {auth.signUpSuccessMessage !==
+            "Your account has been created, please check your mail to active it" && (
+            <>
+              <div className="col sm-12 md-12 lg-12">
+                <Input
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="col sm-12 md-12 lg-12 mt-16">
+                <Input
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+              <div className="col sm-12 md-12 lg-12 mt-16">
+                <Input
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="col sm-12 md-12 lg-12 mt-16">
+                <Input
+                  placeholder="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="col sm-12 md-12 lg-12 mt-16">
+                <Input
+                  placeholder="Confirm password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+              <div className="col sm-12 md-12 lg-12 mt-16 ">
+                <Button
+                  title="SIGN UP"
+                  onClick={handleSignUp}
+                  loading={auth.signuping}
+                />
+              </div>
+              <div className="col sm-12 md-12 lg-12 mt-16">
+                <Anchor
+                  title="Already have an account? Login instead here"
+                  onClick={() => {
+                    resetForm();
+                    closeModals();
+                    setSigninModal(true);
+                  }}
+                />
+              </div>
+            </>
+          )}
+
           <div className="col sm-12 md-12 lg-12 mt-16 socials flex-center">
             <p className="socials__label">Hope you have fun with us</p>
             <div className="mt-12">

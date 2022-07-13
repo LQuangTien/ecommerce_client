@@ -15,6 +15,7 @@ import OrderPage from "./containers/OrderPage";
 import ProductDetailsPage from "./containers/ProductDetailsPage";
 import ProductPage from "./containers/ProductsPage";
 import SearchPage from "./containers/SearchPage";
+import ActivePage from "./containers/ActivePage";
 import PrivateRoute from "./helpers/privateRoute";
 import { io } from "socket.io-client";
 import { domain } from "./urlConfig";
@@ -59,6 +60,12 @@ function App() {
           <ScrollToTop />
           <Switch>
             <Route exact path="/" component={HomePage} />
+            <Route
+              exact
+              path="/active/:userId/:activeCode"
+              component={ActivePage}
+            />
+
             <Route path="/cart" component={CartPage} />
             <PrivateRoute path="/checkout" isAuthenticated={user}>
               <CheckoutPage />
