@@ -30,6 +30,7 @@ const Step = (props) => (
 const PAYMENT_OPTIONS = [
   { name: "Cash on delivery", value: "cod" },
   { name: "Zalopay", value: "zalo" },
+  { name: "Paypal", value: "paypal" },
 ];
 
 function CheckoutPage() {

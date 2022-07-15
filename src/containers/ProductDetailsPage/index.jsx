@@ -170,17 +170,28 @@ const ProductDetailsPage = (props) => {
         productId,
         productName: product.productDetails.name,
       };
-      const isPositive = await isPositiveComment(comment);
-      if (isPositive) {
-        if (commentPage !== 1) {
-          handleCommentPageChange(1);
+      const res = await axios.get(
+        `/user/order/checkUserHasBoughtProduct/${productId}`
+      );
+      const hasBoughtProduct = res.data.data.canComment;
+
+      if (hasBoughtProduct) {
+        const isPositive = await isPositiveComment(comment);
+        if (isPositive) {
+          if (commentPage !== 1) {
+            handleCommentPageChange(1);
+          }
+          setComment("");
+          setCommentError("");
+          setCanComment(false);
+          socket.emit("submit", data);
+        } else {
+          setCommentError("Please reconsider your comment");
         }
-        setComment("");
-        setCommentError("");
-        setCanComment(false);
-        socket.emit("submit", data);
       } else {
-        setCommentError("Please reconsider your comment");
+        setCommentError(
+          "You can only rate the product once you have purchased it"
+        );
       }
     } else {
       dispatch({
@@ -240,7 +251,11 @@ const ProductDetailsPage = (props) => {
   async function isPositiveComment(comment) {
     const resultAnalysisComment = await textSentimentAnalysis(comment);
 
-    if (parseFloat(resultAnalysisComment.pos) === 1) return true;
+    if (
+      parseFloat(resultAnalysisComment.pos) === 1 ||
+      parseFloat(resultAnalysisComment.mid) === 1
+    )
+      return true;
     return false;
   }
   return (
