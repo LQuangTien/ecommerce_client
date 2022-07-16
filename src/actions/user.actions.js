@@ -95,11 +95,6 @@ export const getOrder = () => {
 export const addOrder = (order) => {
   return async (dispatch) => {
     try {
-      if (order.paymentOption === "paypal") {
-        res = await axios.post("/user/order/paypalPayment", order);
-        return;
-      }
-
       dispatch({ type: userConstants.ADD_ORDER_REQUEST });
       let res;
       if (order.paymentOption === "cod") {

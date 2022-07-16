@@ -10,6 +10,7 @@ import CartPage from "../CartPage";
 import Address from "./components/Address";
 import AddressForm from "./components/AddressForm";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import axios from "../../helpers/axios";
 
 const Step = (props) => (
   <div className="checkoutStep">
@@ -31,7 +32,6 @@ const Step = (props) => (
 const PAYMENT_OPTIONS = [
   { name: "Cash on delivery", value: "cod" },
   { name: "Zalopay", value: "zalo" },
-  { name: "Paypal", value: "paypal" },
 ];
 
 function CheckoutPage() {
@@ -335,12 +335,38 @@ function CheckoutPage() {
                           }}
                           onApprove={(data, actions) => {
                             console.log({ dataAfterPayment: data });
-                            return actions.order.capture().then((details) => {
-                              console.log({ details });
+                            return actions.order
+                              .capture()
+                              .then(async (details) => {
+                                setWasConfirmedAddress(false);
+                                setAddAddressStep(false);
+                                setSummaryStep(false);
+                                setPaymentStep(false);
+                                setIsCompleteOrder(true);
 
-                              const name = details.payer.name.given_name;
-                              alert(`Transaction completed by ${name}`);
-                            });
+                                const items = Object.keys(cartItems).map(
+                                  (key, index) => ({
+                                    productId: key,
+                                    paidPrice: cartItems[key].price,
+                                    quantity: cartItems[key].quantity,
+                                  })
+                                );
+                                const order = {
+                                  addressId: selectedAddress._id,
+                                  totalAmount: getTotalPrice(),
+                                  items,
+                                  status: "in progress",
+                                  paymentOption: "paypal",
+                                };
+
+                                await axios
+                                  .post("/user/order/paypalPayment", order)
+                                  .then(() => {
+                                    setTimeout(() => {
+                                      document.location.href = "/";
+                                    }, 0);
+                                  });
+                              });
                           }}
                         />
                       </PayPalScriptProvider>
