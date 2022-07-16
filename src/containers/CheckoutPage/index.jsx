@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { addOrder, getAddress } from "../../actions";
@@ -9,6 +9,7 @@ import formatThousand from "../../utils/formatThousand";
 import CartPage from "../CartPage";
 import Address from "./components/Address";
 import AddressForm from "./components/AddressForm";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const Step = (props) => (
   <div className="checkoutStep">
@@ -294,6 +295,55 @@ function CheckoutPage() {
                           <label htmlFor={type.value}>{type.name}</label>
                         </div>
                       ))}
+                      <PayPalScriptProvider
+                        options={{
+                          "client-id":
+                            "AUO_18_k7PqkzGttQfi0JhToSzGvnoAl4hmNafL1bbNeEbE2y3_Cnp74veaIwWvmXshHb0cKlvfvR7AV",
+                        }}
+                      >
+                        <PayPalButtons
+                          createOrder={(data, actions) => {
+                            return actions.order.create({
+                              purchase_units: [
+                                {
+                                  amount: {
+                                    currency_code: "USD",
+                                    value: getTotalPrice().toString(),
+                                    breakdown: {
+                                      item_total: {
+                                        currency_code: "USD",
+                                        value: getTotalPrice().toString(),
+                                      },
+                                    },
+                                  },
+                                  items: Object.keys(cartItems).map(
+                                    (key, index) => {
+                                      return {
+                                        name: cartItems[key].name,
+                                        unit_amount: {
+                                          currency_code: "USD",
+                                          value:
+                                            cartItems[key].price.toString(),
+                                        },
+                                        quantity: cartItems[key].quantity,
+                                      };
+                                    }
+                                  ),
+                                },
+                              ],
+                            });
+                          }}
+                          onApprove={(data, actions) => {
+                            console.log({ dataAfterPayment: data });
+                            return actions.order.capture().then((details) => {
+                              console.log({ details });
+
+                              const name = details.payer.name.given_name;
+                              alert(`Transaction completed by ${name}`);
+                            });
+                          }}
+                        />
+                      </PayPalScriptProvider>
                       <div className="info-wrapper__container">
                         <Button
                           title="CONFIRM PAYMENT"
