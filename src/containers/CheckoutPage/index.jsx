@@ -159,11 +159,12 @@ function CheckoutPage() {
   );
 
   if (isCompleteOrder && user.redirectUrl !== "" && user.apptransid !== "") {
-    window.location.href = user.redirectUrl;
+    document.location.href = "/";
     return <Redirect to="/" />;
   }
 
   if (isCompleteOrder && payment === "cod") {
+    document.location.href = "/";
     return <Redirect to="/" />;
   }
 
