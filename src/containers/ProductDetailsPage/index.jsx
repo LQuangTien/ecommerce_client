@@ -39,6 +39,7 @@ const ProductDetailsPage = (props) => {
   const [commentError, setCommentError] = useState("");
   const [showReply, setShowReply] = useState("");
   const [reply, setReply] = useState("");
+  const [replyError, setReplyError] = useState("");
   const [canComment, setCanComment] = useState(true);
   const [yourComment, setYourComment] = useState(null);
   const product = useSelector((state) => state.products);
@@ -202,12 +203,18 @@ const ProductDetailsPage = (props) => {
     // dispatch(submitComment({ rating, comment }));
   };
 
-  const handleSubmitReply = (id) => {
+  const handleSubmitReply = async (id) => {
     if (auth.authenticate) {
       const data = { commentId: id, content: reply, productId };
-      setReply("");
-      setShowReply(null);
-      socket.emit("reply", data);
+      const isPositive = await isPositiveComment(reply);
+      if (isPositive) {
+        setReply("");
+        setShowReply(null);
+        setReplyError("");
+        socket.emit("reply", data);
+      } else {
+        setReplyError("Please reconsider your comment");
+      }
     } else {
       dispatch({
         type: authConstants.SHOW_LOGIN_MODAL,
@@ -518,6 +525,7 @@ const ProductDetailsPage = (props) => {
                           onClick={() => {
                             setShowReply(c.id);
                             setReply("");
+                            setReplyError("");
                           }}
                         >
                           Reply
@@ -529,6 +537,18 @@ const ProductDetailsPage = (props) => {
                               onChange={(e) => setReply(e.target.value)}
                               className="cmt__input mt-8"
                             ></textarea>
+                            {replyError !== "" && (
+                              <p
+                                style={{
+                                  fontSize: "1.2rem",
+                                  color: "red",
+                                  paddingLeft: "0.2rem",
+                                  marginBottom: "10px",
+                                }}
+                              >
+                                {replyError}
+                              </p>
+                            )}
                             <Button
                               onClick={() => handleSubmitReply(c.id)}
                               className="cmt__button"
