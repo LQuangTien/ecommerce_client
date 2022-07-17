@@ -295,81 +295,83 @@ function CheckoutPage() {
                           <label htmlFor={type.value}>{type.name}</label>
                         </div>
                       ))}
-                      <PayPalScriptProvider
-                        options={{
-                          "client-id":
-                            "AUO_18_k7PqkzGttQfi0JhToSzGvnoAl4hmNafL1bbNeEbE2y3_Cnp74veaIwWvmXshHb0cKlvfvR7AV",
-                        }}
-                      >
-                        <PayPalButtons
-                          createOrder={(data, actions) => {
-                            return actions.order.create({
-                              purchase_units: [
-                                {
-                                  amount: {
-                                    currency_code: "USD",
-                                    value: getTotalPrice().toString(),
-                                    breakdown: {
-                                      item_total: {
-                                        currency_code: "USD",
-                                        value: getTotalPrice().toString(),
+                      <div style={{ width: "200px" }}>
+                        <PayPalScriptProvider
+                          options={{
+                            "client-id":
+                              "AUO_18_k7PqkzGttQfi0JhToSzGvnoAl4hmNafL1bbNeEbE2y3_Cnp74veaIwWvmXshHb0cKlvfvR7AV",
+                          }}
+                        >
+                          <PayPalButtons
+                            createOrder={(data, actions) => {
+                              return actions.order.create({
+                                purchase_units: [
+                                  {
+                                    amount: {
+                                      currency_code: "USD",
+                                      value: getTotalPrice().toString(),
+                                      breakdown: {
+                                        item_total: {
+                                          currency_code: "USD",
+                                          value: getTotalPrice().toString(),
+                                        },
                                       },
                                     },
+                                    items: Object.keys(cartItems).map(
+                                      (key, index) => {
+                                        return {
+                                          name: cartItems[key].name,
+                                          unit_amount: {
+                                            currency_code: "USD",
+                                            value:
+                                              cartItems[key].price.toString(),
+                                          },
+                                          quantity: cartItems[key].quantity,
+                                        };
+                                      }
+                                    ),
                                   },
-                                  items: Object.keys(cartItems).map(
-                                    (key, index) => {
-                                      return {
-                                        name: cartItems[key].name,
-                                        unit_amount: {
-                                          currency_code: "USD",
-                                          value:
-                                            cartItems[key].price.toString(),
-                                        },
-                                        quantity: cartItems[key].quantity,
-                                      };
-                                    }
-                                  ),
-                                },
-                              ],
-                            });
-                          }}
-                          onApprove={(data, actions) => {
-                            console.log({ dataAfterPayment: data });
-                            return actions.order
-                              .capture()
-                              .then(async (details) => {
-                                setWasConfirmedAddress(false);
-                                setAddAddressStep(false);
-                                setSummaryStep(false);
-                                setPaymentStep(false);
-                                setIsCompleteOrder(true);
-
-                                const items = Object.keys(cartItems).map(
-                                  (key, index) => ({
-                                    productId: key,
-                                    paidPrice: cartItems[key].price,
-                                    quantity: cartItems[key].quantity,
-                                  })
-                                );
-                                const order = {
-                                  addressId: selectedAddress._id,
-                                  totalAmount: getTotalPrice(),
-                                  items,
-                                  status: "in progress",
-                                  paymentOption: "paypal",
-                                };
-
-                                await axios
-                                  .post("/user/order/paypalPayment", order)
-                                  .then(() => {
-                                    setTimeout(() => {
-                                      document.location.href = "/";
-                                    }, 0);
-                                  });
+                                ],
                               });
-                          }}
-                        />
-                      </PayPalScriptProvider>
+                            }}
+                            onApprove={(data, actions) => {
+                              console.log({ dataAfterPayment: data });
+                              return actions.order
+                                .capture()
+                                .then(async (details) => {
+                                  setWasConfirmedAddress(false);
+                                  setAddAddressStep(false);
+                                  setSummaryStep(false);
+                                  setPaymentStep(false);
+                                  setIsCompleteOrder(true);
+
+                                  const items = Object.keys(cartItems).map(
+                                    (key, index) => ({
+                                      productId: key,
+                                      paidPrice: cartItems[key].price,
+                                      quantity: cartItems[key].quantity,
+                                    })
+                                  );
+                                  const order = {
+                                    addressId: selectedAddress._id,
+                                    totalAmount: getTotalPrice(),
+                                    items,
+                                    status: "in progress",
+                                    paymentOption: "paypal",
+                                  };
+
+                                  await axios
+                                    .post("/user/order/paypalPayment", order)
+                                    .then(() => {
+                                      setTimeout(() => {
+                                        document.location.href = "/";
+                                      }, 0);
+                                    });
+                                });
+                            }}
+                          />
+                        </PayPalScriptProvider>
+                      </div>
                       <div className="info-wrapper__container">
                         <Button
                           title="CONFIRM PAYMENT"
